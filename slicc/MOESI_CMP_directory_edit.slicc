@@ -1,0 +1,9 @@
+protocol "MOESI_CMP_directory_edit";
+include "RubySlicc_interfaces.slicc";
+include "MOESI_CMP_directory-msg.sm";
+// include "MOESI_CMP_directory-L1cache-no-L1I-wTimer.sm";
+include "MOESI_CMP_directory-L1cache-no-L1I.sm";
+// include "MOESI_CMP_directory-L2cache-incl.sm";
+include "MOESI_CMP_directory-L2cache-incl-noD_Exc.sm";
+include "MOESI_CMP_directory-dma.sm";
+include "MOESI_CMP_directory-dir.sm";

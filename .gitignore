@@ -1,2 +1,6 @@
 cxl/
 output/
+*.log
+*.pyc
+data/*
+gem5/*

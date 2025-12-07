@@ -2,9 +2,9 @@
 
 Artifacts for "vCXLGen: Automated Synthesis and Verification of CXL Bridges for Heterogeneous Architectures", ASPLOS '26
 
-This repository contains the artifact for verifying CXL-based cache coherence protocols using model checkers.
+This repository contains the artifact for verifying and evaluating CXL-based cache coherence protocols using model checkers and the gem5 simulator.
 
-## Evaluated Setups
+## Evaluated Protocol Setups
 
 **Liveness Evaluation**:
 
@@ -23,6 +23,15 @@ This repository contains the artifact for verifying CXL-based cache coherence pr
 | `MESI` | `CXL`  | `RCC`  | 2                     | `MESIxCXLxRCC`           |
 | `RCC`  | `CXL`  | `RCC`  | 2                     | `RCCxCXLxRCC`            |
 
+**Performance Evaluation**
+
+| CSV Name | gem5 Protocol | Remote Latency | Description |
+|----------|---------------|----------------|-------------|
+| `MOESI_no-lat` | `MOESI_CMP_directory` | 10 cycles | MOESI baseline (low latency) |
+| `MOESI_gem5` | `MOESI_CMP_directory` | 140 cycles | MOESI baseline (standard latency) |
+| `MESI_MESI_MESI` | `MESI_unord` | 140 cycles | MESI-Broadcast protocol |
+| `MESI_CXL_MESI` | `MESI_unord_CXL` | 140 cycles | CXL-Broadcast protocol |
+
 ---
 
 ## Table of Contents
@@ -33,13 +42,24 @@ This repository contains the artifact for verifying CXL-based cache coherence pr
 - [Run Litmus Test Experiments](#run-litmus-test-experiments)
 - [Build Liveness Models](#build-liveness-models)
 - [Run Liveness Experiments](#run-liveness-experiments)
+- [Build gem5](#build-gem5)
+- [Build Benchmarks](#build-benchmarks)
+- [Run Experiments](#run-experiments)
+- [Generate Plots](#generate-plots)
 
 ---
 
 ## Prerequisites
 
 * **OS**: Ubuntu 22.04 LTS
+
+**Verification**
 * **Packet Manager**: Nix with flakes support
+
+**Performance**
+* **Compiler**: GCC 11.4.0
+* **Python**: 3.10+
+* **SCons**: 4.0+
 
 **Hardware Requirements**:
 * ~2TB of RAM for the litmus test evaluation
@@ -49,6 +69,7 @@ This repository contains the artifact for verifying CXL-based cache coherence pr
 
 ## Quick Start
 
+**Verification**
 ```bash
 # 1. Build tools and initialize setup
 cd tools
@@ -75,10 +96,29 @@ nix develop -c python3 -- "gen_figs.py"
 cd ..
 ```
 
+**Performance**
+```bash
+# 1. Build gem5 with all protocols
+./script/build-gem5.sh
+
+# 2. Build benchmarks (PARSEC, SPLASH-4, Phoenix, YCSB)
+./script/build-benchmark-x86.sh
+
+# 3. Generate experiment configurations
+./script/create-conf.sh
+
+# 4. Run experiments
+./script/run.sh
+
+# 5. Generate plots (extracts stats + runs Python scripts)
+./script/plot.sh
+```
+
 ---
 
 ## Install Dependencies
 
+**Verification**
 To install nix with flake support you have multiple options:
 
 **Using the Determinate Nix installer**: simply run:
@@ -93,11 +133,52 @@ echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.con
 sudo systemctl restart nix-daemon.service
 ```
 
+**Performance**
+```bash
+sudo apt-get update && sudo apt-get install -y \
+    build-essential \
+    cmake \
+    g++ \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    scons \
+    zlib1g-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    libgoogle-perftools-dev \
+    libboost-all-dev \
+    libhdf5-serial-dev \
+    libpng-dev \
+    libjemalloc-dev \
+    libhiredis-dev \ 
+    pkg-config \
+    wget \
+    m4 \
+    libtbb-dev \
+    gettext \
+    libgettextpo-dev \
+    libglw1-mesa-dev \
+    libxext-dev \
+    libx11-dev \
+    libxmu-dev \
+    libglut-dev \
+    libxi-dev \
+```
+
+### Python Dependencies (for plotting)
+
+```bash
+pip3 install pandas numpy matplotlib seaborn
+```
+
 ---
 
 ## Repository Structure
 
 ```
+vCXLGen-Artifact/
 ├── CXLGen/                  # vCXLGen protocol generator
 ├── tools/                   # Model checker tools
 │   ├── murphi_src/          # CMurphi v5.4.9 
@@ -121,6 +202,37 @@ sudo systemctl restart nix-daemon.service
 │       ├── results.csv      # Summary of liveness evaluation results
 │       └── incomplete.csv   # Summary of incomplete liveness evaluation runs
 └── eval.sh                  # Full evaluation of all models 
+
+├── gem5/                    # gem5 simulator source
+├── slicc/                   # SLICC protocol definitions
+├── benchmarks/              # Benchmark suites
+│   ├── parsec-benchmark/    # PARSEC 3.0
+│   ├── Splash-4/            # Splash-4
+│   ├── phoenix/             # Phoenix
+│   └── YCSB-C/              # YCSB-C (database workload)
+├── script/                  # Build and run scripts
+│   ├── build-gem5.sh        # Build gem5 for all protocols
+│   ├── build-benchmark-x86.sh   # Build X86 benchmarks
+│   ├── create-conf.sh       # Generate experiment configurations
+│   ├── run.sh               # Run all experiments
+│   ├── run-benchmarks.sh    # Run PARSEC/SPLASH/Phoenix (Fig 11,12,16,17)
+│   ├── run-ycsb.sh          # Run YCSB experiments (Fig 13,14)
+│   ├── extract-stats.sh     # Extract statistics to CSV
+│   ├── plot.sh              # Generate all plots
+│   ├── fig11.py             # Performance comparison plot
+│   ├── fig12.py             # LLC breakdown plot
+│   ├── fig13.py             # YCSB throughput plot
+│   ├── fig14.py             # YCSB scaling plot
+│   ├── fig16.py             # Full benchmark comparison
+│   ├── fig17.py             # LLC breakdown (all apps)
+├── setup/                   # gem5 configuration scripts
+│   ├── setup.py             # Main setup script
+│   └── protocols/           # Protocol definitions
+└── data/                    # Output directory (created at runtime)
+    ├── gem5.output/         # Raw simulation outputs
+    ├── logs/                # Execution logs
+    ├── plots/               # Generated CSV files
+    └── figures/             # Generated PDF/PNG figures
 ```
 
 ---
@@ -239,3 +351,157 @@ This generates two CSV files and three figures in the `output/liveness/` directo
 **Expected run time**: a few hours per model (depending on available RAM and CPUs).
 
 **RAM usage**: 100GB recommended.
+
+## Build gem5
+
+Build the gem5 simulator with all cache coherence protocols:
+
+```bash
+./script/build-gem5.sh
+```
+
+This builds:
+- `gem5/build/X86_MOESI_CMP_directory_edit/gem5.opt`
+- `gem5/build/X86_MESI_unord/gem5.opt`
+- `gem5/build/X86_MESI_unord_CXL/gem5.opt`
+
+**Expected build time**: ~30-60 minutes (depending on CPU cores).
+
+---
+
+## Build Benchmarks
+
+Build all benchmark suites:
+
+```bash
+./script/build-benchmark-x86.sh
+```
+
+To build only YCSB:
+
+```bash
+./script/build-benchmark-x86.sh ycsb
+```
+
+**Benchmark Suites:**
+- **PARSEC**: 13 applications (blackscholes, bodytrack, canneal, etc.)
+- **SPLASH-4**: 15 applications (barnes, cholesky, fft, etc.)
+- **Phoenix**: 7 applications (histogram, kmeans, linear_regression, etc.)
+- **YCSB-C**: 5 workloads (A, B, C, D, F)
+
+---
+
+## Run Experiments
+
+### Generate Configurations
+
+First, generate the experiment configurations:
+
+```bash
+./script/create-conf.sh
+```
+
+This creates `benchmarks/configuration/commands.conf` with all benchmark/protocol combinations.
+
+### Run All Experiments
+
+```bash
+./script/run.sh
+```
+
+### Run Experiments by Figure
+
+Different figures require different benchmark suites:
+
+| Figures | Required Benchmarks | Run Script |
+|---------|---------------------|------------|
+| **11, 12, 16, 17** | PARSEC, SPLASH-4, Phoenix | `./script/run-benchmarks.sh` |
+| **13, 14** | YCSB | `./script/run-ycsb.sh` |
+
+**To generate Figures 11, 12, 16, 17** (performance comparison and LLC breakdown):
+```bash
+./script/run-benchmarks.sh              # Run PARSEC, SPLASH-4, Phoenix
+```
+
+**To generate Figures 13, 14** (YCSB throughput and scaling):
+```bash
+./script/run-ycsb.sh                    # Run YCSB workloads
+```
+
+### Run Filtered Experiments
+
+```bash
+# Benchmark suites (for Figures 11, 12, 16, 17)
+./script/run-benchmarks.sh parsec                   # Run only PARSEC
+./script/run-benchmarks.sh splash                   # Run only SPLASH-4
+./script/run-benchmarks.sh phoenix                  # Run only Phoenix
+./script/run-benchmarks.sh parsec blackscholes      # Run specific app
+
+# YCSB (for Figures 13, 14)
+./script/run-ycsb.sh workloada                      # Run only workload A
+./script/run-ycsb.sh workloadb                      # Run only workload B
+```
+
+### Output Structure
+
+```
+data/
+├── gem5.output/
+│   ├── parsec/{app}/{protocol}/stats.txt
+│   ├── splash/{app}/{protocol}/stats.txt
+│   ├── phoenix/{app}/{protocol}/stats.txt
+│   └── ycsb/{workload}/{protocol}/threads_{N}/stats.txt
+└── logs/
+    └── {suite}_{app}_{protocol}.log
+```
+
+---
+
+## Generate Plots
+
+The plot script automatically extracts statistics and generates figures:
+
+```bash
+./script/plot.sh
+```
+
+To generate a specific figure:
+
+```bash
+./script/plot.sh fig11
+```
+
+### Available Figures
+
+| Figure | Script | Description | Required Data |
+|--------|--------|-------------|---------------|
+| Fig 11 | `fig11.py` | Performance comparison (mean + selected apps) | PARSEC, SPLASH-4, Phoenix |
+| Fig 12 | `fig12.py` | LLC hits/misses breakdown | PARSEC, SPLASH-4, Phoenix |
+| Fig 13 | `fig13.py` | YCSB throughput at 8 threads | YCSB |
+| Fig 14 | `fig14.py` | YCSB scaling with thread counts | YCSB |
+| Fig 16 | `fig16.py` | Full benchmark comparison | PARSEC, SPLASH-4, Phoenix |
+| Fig 17 | `fig17.py` | LLC breakdown for all applications | PARSEC, SPLASH-4, Phoenix |
+
+### Generated CSV Files
+
+The extraction script generates:
+- `data/plots/all_parsec.csv` - PARSEC normalized times
+- `data/plots/all_splash.csv` - SPLASH-4 normalized times
+- `data/plots/all_phoenix.csv` - Phoenix normalized times
+- `data/plots/all.csv` - Combined data with LLC stats
+- `data/plots/gem5-ycsb-all.csv` - YCSB throughput
+- `data/plots/gem5-ycsb-scale.csv` - YCSB scaling data
+
+---
+
+## YCSB Workloads
+
+| Workload | Description |
+|----------|-------------|
+| A | 50% Read, 50% Update |
+| B | 95% Read, 5% Update |
+| C | 100% Read |
+| D | 95% Read, 5% Insert |
+| F | 50% Read, 50% Read-Modify-Write |
+
+---
