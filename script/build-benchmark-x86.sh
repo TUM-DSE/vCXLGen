@@ -210,7 +210,7 @@ build_ycsb() {
     make clean 2>/dev/null || true
     
     # Build YCSB-C
-    make -j "${JOBS}"
+    make
     
     # Verify build succeeded
     if [[ ! -f "${YCSB_DIR}/ycsbc" ]]; then
