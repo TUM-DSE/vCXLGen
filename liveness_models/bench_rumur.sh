@@ -1,3 +1,5 @@
+ulimit -v 2147483648
+
 rm -f checker checker.c output.txt
 
 set -e

@@ -1,0 +1,3 @@
+[submodule "CXLGen"]
+	path = CXLGen
+	url = git@github.com:Gingerbreadz/CXLGen.git

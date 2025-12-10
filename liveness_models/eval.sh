@@ -7,28 +7,28 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # Bench Everything
 find MESIxCXLxRCC -type f -name "MU*.m" | while read -r model; do
     dir=$(dirname "$model")
-    (cd "$dir" && bash "$SCRIPT_DIR/bench_murphi.sh")
+    (cd "$dir" && timeout 3d bash "$SCRIPT_DIR/bench_murphi.sh")
 done
 find MESIxCXLxRCC -type f -name "RMR*.m" | while read -r model; do
     dir=$(dirname "$model")
-    (cd "$dir" && bash "$SCRIPT_DIR/bench_rumur.sh")
+    (cd "$dir" && timeout 3d bash "$SCRIPT_DIR/bench_rumur.sh")
 done
 find MESIxCXLxRCC -type f -name "COMP*.m" | while read -r model; do
     dir=$(dirname "$model")
-    (cd "$dir" && bash "$SCRIPT_DIR/bench_rumur.sh")
+    (cd "$dir" && timeout 3d bash "$SCRIPT_DIR/bench_rumur.sh")
 done
 
 find MESIxMESIxMESI -type f -name "MU*.m" | while read -r model; do
     dir=$(dirname "$model")
-    (cd "$dir" && bash "$SCRIPT_DIR/bench_murphi.sh")
+    (cd "$dir" && timeout 3d bash "$SCRIPT_DIR/bench_murphi.sh")
 done
 find MESIxMESIxMESI -type f -name "RMR*.m" | while read -r model; do
     dir=$(dirname "$model")
-    (cd "$dir" && bash "$SCRIPT_DIR/bench_rumur.sh")
+    (cd "$dir" && timeout 3d bash "$SCRIPT_DIR/bench_rumur.sh")
 done
 find MESIxMESIxMESI -type f -name "COMP*.m" | while read -r model; do
     dir=$(dirname "$model")
-    (cd "$dir" && bash "$SCRIPT_DIR/bench_rumur.sh")
+    (cd "$dir" && timeout 3d bash "$SCRIPT_DIR/bench_rumur.sh")
 done
 
 # Collect Data
