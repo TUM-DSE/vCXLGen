@@ -17,62 +17,62 @@ Processor 6
 	Total Time = 1142
 Time Step 1
 Processor 0
-	Total Time = 886
+	Total Time = 888
 Processor 1
 	Total Time = 1125
 Processor 2
-	Total Time = 984
+	Total Time = 983
 Processor 3
 	Total Time = 1124
 Processor 4
-	Total Time = 858
+	Total Time = 857
 Processor 5
-	Total Time = 1120
+	Total Time = 1117
 Processor 6
 	Total Time = 817
 Time Step 2
 Processor 0
-	Total Time = 857
+	Total Time = 833
 Processor 1
-	Total Time = 846
+	Total Time = 790
 Processor 2
-	Total Time = 895
-Processor 3
 	Total Time = 859
+Processor 3
+	Total Time = 873
 Processor 4
-	Total Time = 871
+	Total Time = 881
 Processor 5
-	Total Time = 858
+	Total Time = 794
 Processor 6
-	Total Time = 896
+	Total Time = 860
 Time Step 3
 Processor 0
-	Total Time = 792
+	Total Time = 831
 Processor 1
-	Total Time = 816
+	Total Time = 876
 Processor 2
-	Total Time = 768
+	Total Time = 807
 Processor 3
-	Total Time = 796
+	Total Time = 776
 Processor 4
-	Total Time = 753
+	Total Time = 743
 Processor 5
-	Total Time = 790
+	Total Time = 881
 Processor 6
-	Total Time = 773
+	Total Time = 846
 Time Step 4
 Processor 0
-	Total Time = 1080
+	Total Time = 763
 Processor 1
-	Total Time = 901
+	Total Time = 754
 Processor 2
-	Total Time = 1091
+	Total Time = 798
 Processor 3
-	Total Time = 1051
+	Total Time = 786
 Processor 4
-	Total Time = 902
+	Total Time = 834
 Processor 5
-	Total Time = 857
+	Total Time = 751
 Processor 6
-	Total Time = 839
+	Total Time = 730
 END
