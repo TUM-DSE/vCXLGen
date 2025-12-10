@@ -1,6 +1,5 @@
 *.o
 *.a
-lib/
 # Binaries
 phoenix-2.0/tests/histogram/histogram
 phoenix-2.0/tests/histogram/histogram-seq
