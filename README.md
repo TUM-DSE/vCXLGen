@@ -223,8 +223,6 @@ vCXLGen-Artifact/
 │   ├── fig12.py             # LLC breakdown plot
 │   ├── fig13.py             # YCSB throughput plot
 │   ├── fig14.py             # YCSB scaling plot
-│   ├── fig16.py             # Full benchmark comparison
-│   ├── fig17.py             # LLC breakdown (all apps)
 ├── setup/                   # gem5 configuration scripts
 │   ├── setup.py             # Main setup script
 │   └── protocols/           # Protocol definitions
@@ -415,10 +413,10 @@ Different figures require different benchmark suites:
 
 | Figures | Required Benchmarks | Run Script |
 |---------|---------------------|------------|
-| **11, 12, 16, 17** | PARSEC, SPLASH-4, Phoenix | `./script/run-benchmarks.sh` |
+| **11, 12** | PARSEC, SPLASH-4, Phoenix | `./script/run-benchmarks.sh` |
 | **13, 14** | YCSB | `./script/run-ycsb.sh` |
 
-**To generate Figures 11, 12, 16, 17** (performance comparison and LLC breakdown):
+**To generate Figures 11, 12** (performance comparison and LLC breakdown):
 ```bash
 ./script/run-benchmarks.sh              # Run PARSEC, SPLASH-4, Phoenix
 ```
@@ -479,8 +477,6 @@ To generate a specific figure:
 | Fig 12 | `fig12.py` | LLC hits/misses breakdown | PARSEC, SPLASH-4, Phoenix |
 | Fig 13 | `fig13.py` | YCSB throughput at 8 threads | YCSB |
 | Fig 14 | `fig14.py` | YCSB scaling with thread counts | YCSB |
-| Fig 16 | `fig16.py` | Full benchmark comparison | PARSEC, SPLASH-4, Phoenix |
-| Fig 17 | `fig17.py` | LLC breakdown for all applications | PARSEC, SPLASH-4, Phoenix |
 
 ### Generated CSV Files
 
