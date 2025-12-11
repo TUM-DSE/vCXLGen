@@ -429,7 +429,7 @@ Different figures require different benchmark suites:
 ### Run Filtered Experiments
 
 ```bash
-# Benchmark suites (for Figures 11, 12, 16, 17)
+# Benchmark suites (for Figures 11, 12)
 ./script/run-benchmarks.sh parsec                   # Run only PARSEC
 ./script/run-benchmarks.sh splash                   # Run only SPLASH-4
 ./script/run-benchmarks.sh phoenix                  # Run only Phoenix
