@@ -323,7 +323,7 @@ if [[ -d "${YCSB_DIR}" && -f "${YCSB_DIR}/ycsbc" ]]; then
     for workload in "${YCSB_WORKLOADS[@]}"; do
         for threads in "${YCSB_THREADS[@]}"; do
             # Cores = threads (no extra core for this benchmark)
-            cores=$threads
+            cores=$((threads+2))
             
             # Generate full command line for each protocol configuration
             for config in "${PROTOCOL_CONFIGS[@]}"; do
@@ -333,7 +333,7 @@ if [[ -d "${YCSB_DIR}" && -f "${YCSB_DIR}/ycsbc" ]]; then
                 rel_path="YCSB-C"
                 
                 # YCSB command: ./ycsbc -db lock_stl -threads N -P workloads/workloadX.spec
-                cmd_line="gem5/build/X86_${protocol}/gem5.opt --outdir=${out_dir} --redirect-stdout --redirect-stderr setup/setup.py -c ${cores} --remote-latency ${latency} -ro -- benchmarks/${rel_path}/ycsbc -db lock_stl -threads ${threads} -P benchmarks/${rel_path}/workloads/workload${workload,,}.spec"
+                cmd_line="gem5/build/X86_${protocol}/gem5.opt --outdir=${out_dir} --redirect-stdout --redirect-stderr setup/setup.py -c ${cores} --remote-latency ${latency} -rm -ro -- benchmarks/${rel_path}/ycsbc -db lock_stl -threads ${threads} -P benchmarks/${rel_path}/workloads/workload${workload,,}.spec"
                 echo "ycsb | ${csv_name} | ${workload}_t${threads} | ${cmd_line}" >> "${COMMANDS_FILE}"
             done
         done

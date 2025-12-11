@@ -93,10 +93,12 @@ mem_range = AddrRange("8GB")
 component_latency = 10
 local_latency = 10
 
-remote_addr_vaddr = 0x20000000
+#remote_addr_vaddr = 0x20000000
+remote_addr_vaddr = 0x10000000
 remote_addr_range = AddrRange(
     start=2**40,
-    size=2**23
+    #size=2**23
+    size=2**30
 )
 
 mem_ctrl = MemCtrl()
@@ -229,7 +231,7 @@ for cpu in system.cpu:
 
 root = Root(full_system=False, system=system)
 m5.instantiate()
-
+process.map(remote_addr_vaddr, remote_addr_range.start, remote_addr_range.size())
 print(f"Beginning simulation!")
 exit_event = m5.simulate()
 print(f"Exiting @ tick {m5.curTick()} because {exit_event.getCause()}")
