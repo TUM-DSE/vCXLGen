@@ -4,3 +4,4 @@ output/
 *.pyc
 data/*
 gem5/*
+benchmarks/configuration
