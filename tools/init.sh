@@ -12,3 +12,8 @@ make
 cd ../../
 ln -sf rumur_src/build/rumur/rumur rumur
 ln -sf murphi_src/src/mu mu
+
+cd ..
+git submodule update --init --recursive
+mkdir -p output/liveness/
+mkdir -p output/litmus/

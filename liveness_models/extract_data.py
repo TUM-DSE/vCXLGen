@@ -179,11 +179,17 @@ for folder in folders:
 # 3. Create CSV File
 df = pd.DataFrame(data)
 df.to_csv('results.csv', index=False) 
-
-print(f"Results written to results.csv")
+try:
+    df.to_csv('../output/liveness/results.csv', index=False)
+    print(f"Results written to output/liveness/results.csv")
+except:
+    print(f"Results written to results.csv")
 
 df = pd.DataFrame(data_incomplete)
 df.to_csv('incomplete.csv', index=False) 
-
-print(f"Incomplete results written to incomplete.csv")
+try:
+    df.to_csv('../output/liveness/incomplete.csv', index=False)
+    print(f"Incomplete results written to output/liveness/incomplete.csv")
+except:
+    print(f"Incomplete results written to incomplete.csv")
 

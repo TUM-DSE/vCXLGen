@@ -1,8 +1,3 @@
-git submodule update --init --recursive
-mkdir -p output/liveness/
-mkdir -p output/litmus/
-
-
 # === 1. Build Tools ===
 cd tools
 nix develop -c "./build_tools.sh"
