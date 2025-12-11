@@ -1,8 +1,7 @@
 config PROTOCOL
     default "MESI_unord" if RUBY_MESI_unord
     default "MESI_unord_CXL" if RUBY_MESI_unord_CXL
-    default "MESI_CXL_MOESI" if RUBY_MESI_CXL_MOESI
-    default "MESI_CXL_MESIF" if RUBY_MESI_CXL_MESIF
+    default "MOESI_CMP_directory_edit" if RUBY_PROTOCOL_MOESI_CMP_DIRECTORY_EDIT
 
 
 
@@ -11,8 +10,6 @@ cont_choice "Ruby protocol"
         bool "MESI_unord"
     config RUBY_MESI_unord_CXL
         bool "MESI_unord_CXL"
-    config RUBY_MESI_CXL_MOESI
-        bool "MESI_CXL_MOESI"
-    config RUBY_MESI_CXL_MESIF
-        bool "MESI_CXL_MESIF"
+    config RUBY_PROTOCOL_MOESI_CMP_DIRECTORY_EDIT
+        bool "MOESI_CMP_directory_edit"
 endchoice
