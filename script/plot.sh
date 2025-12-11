@@ -120,7 +120,7 @@ success_count=0
 fail_count=0
 skip_count=0
 
-cd "${PLOTS_DIR}"
+cd "${REPO_ROOT}"
 
 for script_name in "${FIGURE_SCRIPTS[@]}"; do
     # Skip if filter is set and doesn't match

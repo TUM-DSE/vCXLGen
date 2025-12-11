@@ -12,7 +12,7 @@ YCSB_DESCRIPTIONS = {
     "F": "F (50% read, 50% read-modify-write)"
 }
 
-def plot_ycsb_scaling(file_path, output_filename="gem5-ycsb-scale.pdf", figsize=(6, 1.5)):
+def plot_ycsb_scaling(file_path, output_filename="data/figures/gem5-ycsb-scale.pdf", figsize=(6, 1.5)):
 
     # Leggi il file CSV
     df_ycsb_scale = pd.read_csv(file_path)
@@ -32,7 +32,7 @@ def plot_ycsb_scaling(file_path, output_filename="gem5-ycsb-scale.pdf", figsize=
     # Definisci i marker e i colori da usare
     markers = ["o", "s", "v", "D", "X"]
     # Palette di colori coerente
-    colors = ['#1f78b4', '#fdbf6f', '#ff7f00']
+    colors = ['#1f78b4', '#fdbf6f', '#ff7f00', '#add8e6']
 
     
     # Lista per le etichette della legenda
@@ -107,6 +107,6 @@ def plot_ycsb_scaling(file_path, output_filename="gem5-ycsb-scale.pdf", figsize=
 if __name__ == "__main__":
     try:
         # Sostituisci con il percorso effettivo del tuo file CSV
-        plot_ycsb_scaling("./plots/gem5-ycsb-scale.csv")
+        plot_ycsb_scaling("data/plots/gem5-ycsb-scale.csv")
     except Exception as e:
         print(f"Error creating plot: {e}")

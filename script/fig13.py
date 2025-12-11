@@ -205,7 +205,7 @@ def plot_ycsb(file_path, metric='throughput', figsize=(7,2.5), save=True):
     plt.subplots_adjust(bottom=0.27)  # Adjust this value to make room for the boxes
     
     if save:
-        plt.savefig(f"gem5-ycsb-all.pdf", dpi="figure", pad_inches=0.05, bbox_inches="tight")
+        plt.savefig(f"data/figures/gem5-ycsb-all.pdf", dpi="figure", pad_inches=0.05, bbox_inches="tight")
     
     return fig, ax
 
@@ -213,7 +213,7 @@ def plot_ycsb(file_path, metric='throughput', figsize=(7,2.5), save=True):
 if __name__ == "__main__":
     try:
         # Path to your CSV file
-        csv_path = "./plots/gem5-ycsb-all.csv"
+        csv_path = "data/plots/gem5-ycsb-all.csv"
         
         # Create the plot with the original dimensions
         fig, ax = plot_ycsb(csv_path, metric='throughput', figsize=(7, 2.5))
