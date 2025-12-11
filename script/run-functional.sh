@@ -114,7 +114,6 @@ run_x86_functional() {
             --redirect-stderr \
             setup/setup.py \
             -c ${GEM5_CORES} \
-            --switched \
             -ro \
             -- \
             "${kmeans_binary}" \

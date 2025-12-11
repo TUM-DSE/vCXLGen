@@ -36,7 +36,7 @@ if [[ ! -f "${CONFIG_FILE}" ]]; then
 fi
 
 # Check if required gem5 builds exist
-REQUIRED_BUILDS=("MOESI_CMP_directory" "MESI_unord" "MESI_unord_CXL")
+REQUIRED_BUILDS=("MOESI_CMP_directory_edit" "MESI_unord" "MESI_unord_CXL")
 MISSING_BUILDS=()
 for protocol in "${REQUIRED_BUILDS[@]}"; do
     if [[ ! -f "${REPO_ROOT}/gem5/build/X86_${protocol}/gem5.opt" ]]; then
@@ -174,19 +174,59 @@ echo "Started ${experiments_started} experiments"
 echo "=============================================="
 echo ""
 
-# Wait for all experiments to complete
+# Wait for all experiments to complete with progress monitoring
 if [[ ${#running_pids[@]} -gt 0 ]]; then
-    echo "Waiting for experiments to complete..."
+    completed=0
+    failed=0
+    declare -A pid_done=()
+    total=${#running_pids[@]}
+
+    echo "Waiting for experiments to complete (progress every 30s)..."
     echo "You can monitor progress with: tail -f ${LOG_DIR}/*.log"
     echo ""
-    
-    for pid in "${running_pids[@]}"; do
-        wait "$pid" 2>/dev/null || true
+
+    while true; do
+        still_running=0
+        
+        for pid in "${running_pids[@]}"; do
+            if [[ "$pid" =~ ^[0-9]+$ && -z "${pid_done[$pid]:-}" ]]; then
+                exp_name="${pid_info[$pid]}"
+                
+                # Check if process is still running
+                if kill -0 "$pid" 2>/dev/null; then
+                    ((still_running++)) || true
+                else
+                    # Process finished
+                    pid_done[$pid]=1
+                    if wait "$pid" 2>/dev/null; then
+                        echo "[OK] ${exp_name}"
+                        ((completed++)) || true
+                    else
+                        echo "[FAILED] ${exp_name}"
+                        ((failed++)) || true
+                    fi
+                fi
+            fi
+        done
+        
+        # Exit loop when all done
+        if [[ $still_running -eq 0 ]]; then
+            break
+        fi
+        
+        # Show progress
+        echo ""
+        echo "--- [$(date +%H:%M:%S)] Progress: ${completed} completed, ${failed} failed, ${still_running} running (of ${total}) ---"
+        
+        sleep 30
     done
-    
+
     echo ""
     echo "=============================================="
-    echo "All experiments completed!"
+    echo "Summary:"
+    echo "  Total started: ${total}"
+    echo "  Completed:     ${completed}"
+    echo "  Failed:        ${failed}"
     echo "=============================================="
 fi
 
@@ -194,5 +234,10 @@ fi
 echo ""
 echo "Results saved in: ${DATA_DIR}/gem5.output/"
 echo "Logs saved in: ${LOG_DIR}/"
+echo ""
+echo "To monitor progress:"
+echo "  1. View logs: tail -f ${LOG_DIR}/*.log"
+echo "  2. Check process status: ps aux | grep gem5"
+echo "  3. View log backups: ls -la ${LOG_DIR}/backup/"
 echo ""
 echo "Next step: Run './script/extract-stats.sh' to generate CSV files"
