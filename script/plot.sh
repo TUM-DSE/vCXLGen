@@ -34,7 +34,7 @@ for arg in "$@"; do
             echo "  --no-extract    Skip CSV extraction, only generate plots"
             echo "  --help, -h      Show this help message"
             echo ""
-            echo "Figures: fig11, fig12, fig13, fig14, fig16, fig17, breakdown-plot"
+            echo "Figures: fig11, fig12, fig13, fig14"
             exit 0
             ;;
         *)
@@ -113,7 +113,7 @@ echo ""
 
 mkdir -p "${DATA_DIR}/figures"
 
-FIGURE_SCRIPTS=("fig11" "fig12" "fig13" "fig14" "fig16" "fig17" "breakdown-plot")
+FIGURE_SCRIPTS=("fig11" "fig12" "fig13" "fig14")
 YCSB_REQUIRED=("fig13" "fig14")
 
 success_count=0
