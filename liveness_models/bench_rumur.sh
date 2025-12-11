@@ -1,4 +1,4 @@
-ulimit -v 2147483648
+ulimit -v 104857600
 
 rm -f checker checker.c output.txt
 

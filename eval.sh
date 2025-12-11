@@ -1,4 +1,7 @@
 git submodule update --init --recursive
+mkdir -p output/liveness/
+mkdir -p output/litmus/
+
 
 # === 1. Build Tools ===
 cd tools
@@ -9,10 +12,8 @@ cd ..
 # === 2. Litmus Tests ===
 cd CXLGen
 git checkout -f mc-cxl-lit
-nix develop -c "./eval.sh"
+nix develop -c python3 -- "eval.py" "all"
 cd ..
-mkdir -p output
-cp CXLGen/TestScripts/Test_Result.txt output/LitmusTest_Results.txt
 
 
 # === 3. Generate Liveness Models ===
