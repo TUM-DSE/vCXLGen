@@ -28,10 +28,10 @@ class L1Cache(L1Cache_Controller):
         self.version = self.versionCount()
         # This is the cache memory object that stores the cache data and tags
         self.L1Icache = RubyCache(
-            size="16kB", assoc=8, start_index_bit=self.getBlockSizeBits(system), is_icache=True
+            size="128kB", assoc=8, start_index_bit=self.getBlockSizeBits(system), is_icache=True
         )
         self.L1Dcache = RubyCache(
-            size="16kB", assoc=8, start_index_bit=self.getBlockSizeBits(system), is_icache=False
+            size="128kB", assoc=8, start_index_bit=self.getBlockSizeBits(system), is_icache=False
         )
         self.l2_id = cluster_id
         self.clk_domain = cpu.clk_domain
@@ -95,7 +95,7 @@ class L2Cache(L2Cache_Controller):
         self.version = self.versionCount()
         # This is the cache memory object that stores the cache data and tags
         self.L2cache = RubyCache(
-            size="512kB", assoc=8, start_index_bit=self.getBlockSizeBits(system)
+            size="4MB", assoc=8, start_index_bit=self.getBlockSizeBits(system)
         )
         self.ruby_system = ruby_system
         self.connectQueues(ruby_system)

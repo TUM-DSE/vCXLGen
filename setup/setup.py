@@ -1,24 +1,10 @@
 #!/usr/bin/env python3
-"""
-setup.py - gem5 setup script for C-3 Artifact experiments
-
-This setup script is configured for performance comparison experiments:
-- Uses DDR3_1600_8x8 memory
-- Uses O3CPU (generic out-of-order CPU)
-- Supports MOESI_CMP_directory, MESI_unord, MESI_unord_CXL protocols
-- Configurable remote latency (10 for MOESI_no-lat, 140 for others)
-
-Protocol mappings:
-  MOESI_CMP_directory (lat=10)  -> MOESI_no-lat in CSV
-  MOESI_CMP_directory (lat=140) -> MOESI_gem5 in CSV  
-  MESI_unord (lat=140)          -> MESI_MESI_MESI in CSV
-  MESI_unord_CXL (lat=140)      -> MESI_CXL_MESI in CSV
-"""
 
 import m5
 from m5.objects import *
 import argparse
 import math
+import os
 
 m5.util.addToPath("/gem5/configs")
 
@@ -103,7 +89,6 @@ ruby_system.network = network
 ruby_system.number_of_virtual_networks = 9
 ruby_system.network.number_of_virtual_networks = 9
 
-# Memory configuration - using DDR3 for experiments
 mem_range = AddrRange("8GB")
 component_latency = 10
 local_latency = 10
@@ -114,9 +99,8 @@ remote_addr_range = AddrRange(
     size=2**23
 )
 
-# Use DDR3_1600_8x8 for experiments
 mem_ctrl = MemCtrl()
-mem_ctrl.dram = DDR3_1600_8x8()
+mem_ctrl.dram = DDR5_4400_4x8()()
 mem_ctrl.dram.range = mem_range
 
 dir = make_dir(ruby_system, mem_range, mem_ctrl)
@@ -126,7 +110,7 @@ network.connect_controller(dir_rounter, dir)
 
 if args.remote_memory:
     remote_mem_ctrl = MemCtrl()
-    remote_mem_ctrl.dram = DDR3_1600_8x8()
+    remote_mem_ctrl.dram = DDR5_4400_4x8()()
     remote_mem_ctrl.dram.range = remote_addr_range
 
     remote_dir = make_dir(ruby_system, remote_addr_range, remote_mem_ctrl)
@@ -191,10 +175,42 @@ network.setup_buffers()
 ruby_system.sys_port_proxy = RubyPortProxy()
 system.system_port = ruby_system.sys_port_proxy.in_ports
 
-# Process workload
+if args.cmd and args.cmd[0] == "--":
+    args.cmd = args.cmd[1:]
+
+if not args.cmd:
+    fatal("No workload/binary specified. Expect: -- <binary> [args...]")
+
+
+binary_path = args.cmd[0]
+binary_abs = os.path.abspath(binary_path)
+
+
+def find_run_directory(binary_path):
+
+    path_parts = binary_path.split(os.sep)
+    
+    if 'inst' in path_parts:
+        inst_idx = path_parts.index('inst')
+        run_path = os.sep.join(path_parts[:inst_idx] + ['run'])
+        if os.path.isdir(run_path):
+            return run_path
+    
+
+    for arg in args.cmd[1:]:
+        if arg.startswith('benchmarks/') or arg.startswith('data/'):
+            repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            return repo_root
+    
+    return os.path.dirname(binary_path)
+
+run_dir = find_run_directory(binary_abs)
+print(f"Working directory set to: {run_dir}")
+
 system.workload = SEWorkload.init_compatible(args.cmd[0])
 
 process = Process()
+process.cwd = run_dir
 
 if args.redirect_output:
     process.output = "output.txt"

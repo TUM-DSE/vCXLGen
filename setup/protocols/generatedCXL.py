@@ -24,7 +24,7 @@ class L1Cache(L1Cache_Controller):
 
         self.version = self.versionCount()
         self.cache = RubyCache(
-            size="16kB", assoc=8, start_index_bit=self.getBlockSizeBits(system), is_icache=False
+            size="128kB", assoc=8, start_index_bit=self.getBlockSizeBits(system), is_icache=False
         )
         
         self.l2_id = cluster_id
@@ -93,7 +93,7 @@ class L0Cache(L0Cache_Controller):
         self.version = self.versionCount()
         # This is the cache memory object that stores the cache data and tags
         self.cache = RubyCache(
-            size="512kB", assoc=8, start_index_bit=self.getBlockSizeBits(system), is_icache=False
+            size="4MB", assoc=8, start_index_bit=self.getBlockSizeBits(system), is_icache=False
         )
         self.ruby_system = ruby_system
         self.connectQueues(ruby_system)
