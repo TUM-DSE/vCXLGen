@@ -45,11 +45,13 @@ class LockStlDB : public HashtableDB {
 
   const char *CopyString(const std::string &str) {
     char *value = new char[str.length() + 1];
+    // cout << "CopyString: " << str << endl;  
     strcpy(value, str.c_str());
     return value;
   }
 
   void DeleteString(const char *str) {
+    // cout << "DeleteString: " << str << endl;
     delete[] str;
   }
 };

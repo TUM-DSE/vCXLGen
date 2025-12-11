@@ -16,10 +16,21 @@ using std::string;
 using std::vector;
 using vmp::StringHashtable;
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
+// #define PRINT_DEBUG
+
 namespace ycsbc {
 
 int HashtableDB::Read(const string &table, const string &key,
     const vector<string> *fields, vector<KVPair> &result) {
+
+#ifdef PRINT_DEBUG
+  cout << "READ " << table << ' ' << key << endl;
+#endif
+
   string key_index(table + key);
   FieldHashtable *field_table = key_table_->Get(key_index.c_str());
   if (!field_table) return DB::kErrorNoData;
@@ -39,6 +50,9 @@ int HashtableDB::Read(const string &table, const string &key,
   }
   return DB::kOK;
 }
+
+
+
 
 int HashtableDB::Scan(const string &table, const string &key, int len,
     const vector<string> *fields, vector<vector<KVPair>> &result) {
@@ -70,8 +84,16 @@ int HashtableDB::Scan(const string &table, const string &key, int len,
   return DB::kOK;
 }
 
+
+
+
 int HashtableDB::Update(const string &table, const string &key,
     vector<KVPair> &values) {
+
+#ifdef PRINT_DEBUG
+  cout << "UPDATE " << table << ' ' << key << endl;
+#endif
+
   string key_index(table + key);
   FieldHashtable *field_table = key_table_->Get(key_index.c_str());
   if (!field_table) {
@@ -97,6 +119,10 @@ int HashtableDB::Update(const string &table, const string &key,
 
 int HashtableDB::Insert(const string &table, const string &key,
     vector<KVPair> &values) {
+
+#ifdef PRINT_DEBUG
+  cout << "INSERT " << table << ' ' << key << endl;
+#endif
   string key_index(table + key);
   FieldHashtable *field_table = key_table_->Get(key_index.c_str());
   if (!field_table) {
@@ -117,6 +143,10 @@ int HashtableDB::Insert(const string &table, const string &key,
 
 int HashtableDB::Delete(const string &table, const string &key) {
   string key_index(table + key);
+
+#ifdef PRINT_DEBUG
+  cout << "DELETE " << table << ' ' << key << endl;
+#endif
   FieldHashtable *field_table = key_table_->Remove(key_index.c_str());
   if (!field_table) {
     return DB::kErrorNoData;

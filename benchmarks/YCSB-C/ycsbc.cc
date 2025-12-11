@@ -16,6 +16,10 @@
 #include "core/client.h"
 #include "core/core_workload.h"
 #include "db/db_factory.h"
+#include "lib/mem_alloc.h"
+
+// #include "gem5/m5ops.h"
+// #define M5OPS
 
 using namespace std;
 
@@ -39,7 +43,12 @@ int DelegateClient(ycsbc::DB *db, ycsbc::CoreWorkload *wl, const int num_ops,
   return oks;
 }
 
+
+
 int main(const int argc, const char *argv[]) {
+
+
+  printf("Hello YSCB-C\n");
   utils::Properties props;
   string file_name = ParseCommandLine(argc, argv, props);
 
@@ -53,43 +62,95 @@ int main(const int argc, const char *argv[]) {
   wl.Init(props);
 
   const int num_threads = stoi(props.GetProperty("threadcount", "1"));
+  const int remote = stoi(props.GetProperty("remote", "0"));
+  const int noload = stoi(props.GetProperty("noload", "0"));
+  const int norun = stoi(props.GetProperty("norun", "0"));
+  const int checkpoint = stoi(props.GetProperty("checkpoint", "0"));
 
-  // Loads data
+  if (InitMemAlloc(1024 * 1024 * 800, remote)) {
+    cout << "Memory allocation failed." << endl;
+    exit(0);
+  }
+
+
   vector<future<int>> actual_ops;
-  int total_ops = stoi(props[ycsbc::CoreWorkload::RECORD_COUNT_PROPERTY]);
-  for (int i = 0; i < num_threads; ++i) {
-    actual_ops.emplace_back(async(launch::async,
-        DelegateClient, db, &wl, total_ops / num_threads, true));
-  }
-  assert((int)actual_ops.size() == num_threads);
+  int total_ops = 0;
 
-  int sum = 0;
-  for (auto &n : actual_ops) {
-    assert(n.valid());
-    sum += n.get();
-  }
-  cerr << "# Loading records:\t" << sum << endl;
+  // Loading phase ----------------------------------------------------
+  
+  if (!noload) {
+    total_ops = stoi(props[ycsbc::CoreWorkload::RECORD_COUNT_PROPERTY]);
+  
+  #ifdef M5OPS
+    // m5_dump_reset_stats(0, 0);
+    // m5_reset_stats(0, 0);
+  #endif
 
-  // Peforms transactions
-  actual_ops.clear();
-  total_ops = stoi(props[ycsbc::CoreWorkload::OPERATION_COUNT_PROPERTY]);
-  utils::Timer<double> timer;
-  timer.Start();
-  for (int i = 0; i < num_threads; ++i) {
-    actual_ops.emplace_back(async(launch::async,
-        DelegateClient, db, &wl, total_ops / num_threads, false));
-  }
-  assert((int)actual_ops.size() == num_threads);
+    for (int i = 0; i < num_threads; ++i) {
+      actual_ops.emplace_back(async(launch::async,
+          DelegateClient, db, &wl, total_ops / num_threads, true));
+    }
 
-  sum = 0;
-  for (auto &n : actual_ops) {
-    assert(n.valid());
-    sum += n.get();
+  #ifdef M5OPS
+    // m5_dump_reset_stats(0, 0);
+  #endif
+
+    assert((int)actual_ops.size() == num_threads);
+
+    int sum = 0;
+    for (auto &n : actual_ops) {
+      assert(n.valid());
+      sum += n.get();
+    }
+    cerr << "# Done loading records: \t" << sum << endl;
+    actual_ops.clear();
   }
-  double duration = timer.End();
-  cerr << "# Transaction throughput (KTPS)" << endl;
-  cerr << props["dbname"] << '\t' << file_name << '\t' << num_threads << '\t';
-  cerr << total_ops / duration / 1000 << endl;
+  // --------------------------------------------------------------------
+
+#ifdef M5OPS
+    if (checkpoint)
+      m5_checkpoint(0, 0);
+#endif
+
+  // Run phase ---------------------------------------------------------
+  
+  if (!norun) {
+    total_ops = stoi(props[ycsbc::CoreWorkload::OPERATION_COUNT_PROPERTY]);
+    utils::Timer<double> timer;
+    timer.Start();
+
+  #ifdef M5OPS
+    // m5_dump_reset_stats(0, 0);
+    m5_reset_stats(0, 0);
+  #endif
+    for (int i = 0; i < num_threads; ++i) {
+      actual_ops.emplace_back(async(launch::async,
+          DelegateClient, db, &wl, total_ops / num_threads, false));
+    }
+
+  #ifdef M5OPS
+    m5_dump_reset_stats(0, 0);
+  #endif
+
+    assert((int)actual_ops.size() == num_threads);
+
+    int sum = 0;
+    for (auto &n : actual_ops) {
+      assert(n.valid());
+      sum += n.get();
+    }
+    double duration = timer.End();
+    cerr << "# Transaction throughput (KTPS)" << endl;
+    cerr << props["dbname"] << '\t' << file_name << '\t' << num_threads << '\t';
+    cerr << total_ops / duration / 1000 << endl;
+  }
+  // --------------------------------------------------------------------
+
+  if (CloseMemAlloc()) {
+    cout << "Memory deallocation failed." << endl;
+    exit(0);
+  }
+
 }
 
 string ParseCommandLine(int argc, const char *argv[], utils::Properties &props) {
@@ -136,7 +197,20 @@ string ParseCommandLine(int argc, const char *argv[], utils::Properties &props) 
       }
       props.SetProperty("slaves", argv[argindex]);
       argindex++;
-    } else if (strcmp(argv[argindex], "-P") == 0) {
+    } else if (strcmp(argv[argindex], "-remote") == 0) {
+      props.SetProperty("remote", "1");
+      argindex++;
+    } else if (strcmp(argv[argindex], "-noload") == 0) {
+      props.SetProperty("noload", "1");
+      argindex++;
+    } else if (strcmp(argv[argindex], "-norun") == 0) {
+      props.SetProperty("norun", "1");
+      argindex++;
+    } else if (strcmp(argv[argindex], "-checkpoint") == 0) {
+      props.SetProperty("checkpoint", "1");
+      argindex++;
+    }
+    else if (strcmp(argv[argindex], "-P") == 0) {
       argindex++;
       if (argindex >= argc) {
         UsageMessage(argv[0]);

@@ -12,7 +12,7 @@
 #include <string>
 #include "core/properties.h"
 #include "redis/redis_client.h"
-#include <hiredis/hiredis.h>
+#include "redis/hiredis/hiredis.h"
 
 using std::cout;
 using std::endl;
