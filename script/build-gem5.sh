@@ -5,7 +5,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 GEM5_DIR="${REPO_ROOT}/gem5"
 
 # Check if gem5 directory exists, if not run compile-gem5.sh first
-# "${SCRIPT_DIR}/compile-gem5.sh"
+"${SCRIPT_DIR}/compile-gem5.sh"
 
 
 ALL_PROTOCOLS=(
