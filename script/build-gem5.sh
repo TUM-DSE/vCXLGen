@@ -5,13 +5,20 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 GEM5_DIR="${REPO_ROOT}/gem5"
 
 # Check if gem5 directory exists, if not run compile-gem5.sh first
-"${SCRIPT_DIR}/compile-gem5.sh"
+# "${SCRIPT_DIR}/compile-gem5.sh"
 
 
 ALL_PROTOCOLS=(
     "MOESI_CMP_directory_edit"
     "MESI_unord"
     "MESI_unord_CXL"
+)
+
+
+declare -A RUBY_FLAG_MAP=(
+    ["MOESI_CMP_directory_edit"]="RUBY_PROTOCOL_MOESI_CMP_DIRECTORY_EDIT"
+    ["MESI_unord"]="RUBY_MESI_unord"
+    ["MESI_unord_CXL"]="RUBY_MESI_unord_CXL"
 )
 
 if [[ -n "${1:-}" && ! "${1}" =~ ^[0-9]+$ ]]; then
@@ -29,9 +36,10 @@ for PROTOCOL in "${PROTOCOLS[@]}"; do
 
     echo "Building ${PROTOCOL}"
     scons defconfig "${BUILD_DIR}" build_opts/X86
+    RUBY_OPT="${RUBY_FLAG_MAP[${PROTOCOL}]:-RUBY_${PROTOCOL}}"
     scons setconfig "${BUILD_DIR}" \
         RUBY=y \
-        RUBY_${PROTOCOL}=y
+        ${RUBY_OPT}=y
     scons "${BUILD_DIR}/gem5.opt" -j "${JOBS}"
     echo "Done: ${BUILD_DIR}/gem5.opt"
 done
