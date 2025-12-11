@@ -84,7 +84,7 @@ To install nix with flake support you have multiple options:
 curl -fsSL https://install.determinate.systems/nix | sh -s -- install
 ```
 
-**Using the official Nix installer**: follow the instructions at https://nixos.org/download.html, and enable flakes by adding the following lines to your `/etc/nix/nix.conf`:
+**Using the official Nix installer**: following the instructions at https://nixos.org/download.html and enabling flake support:
 ```bash
 sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
 echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
