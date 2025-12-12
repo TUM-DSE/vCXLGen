@@ -3,7 +3,7 @@
 # plot.sh - Generate all plots from simulation results
 #
 # This script:
-#   1. Calls extract-stats.sh to generate CSV files from simulation outputs
+#   1. Calls extract-stats.py to generate CSV files from simulation outputs
 #   2. Runs Python plot scripts to generate figures
 #
 # Usage:
@@ -57,12 +57,12 @@ if [[ "${SKIP_EXTRACT}" == "false" ]]; then
     echo ">>> Step 1: Extracting statistics..."
     echo ""
     
-    if [[ ! -f "${SCRIPT_DIR}/extract-stats.sh" ]]; then
-        echo "ERROR: extract-stats.sh not found"
+    if [[ ! -f "${SCRIPT_DIR}/extract-stats.py" ]]; then
+        echo "ERROR: extract-stats.py not found"
         exit 1
     fi
     
-    bash "${SCRIPT_DIR}/extract-stats.sh"
+    bash "$python3 {SCRIPT_DIR}/extract-stats.py"
     
     echo ""
     echo ">>> Statistics extraction complete"
@@ -77,7 +77,7 @@ echo ">>> Step 2: Verifying CSV files..."
 
 if [[ ! -d "${PLOTS_DIR}" ]]; then
     echo "ERROR: Plots directory not found: ${PLOTS_DIR}"
-    echo "Run './script/extract-stats.sh' first."
+    echo "Run 'python3 ./script/extract-stats.py' first."
     exit 1
 fi
 

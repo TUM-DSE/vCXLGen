@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
-# Definizioni delle descrizioni YCSB
+# Definitions of YCSB descriptions
 YCSB_DESCRIPTIONS = {
     "A": "A (50% read, 50% update)",
     "B": "B (95% read, 5% update)",
@@ -17,43 +17,42 @@ def plot_ycsb_scaling(file_path, output_filename="data/figures/gem5-ycsb-scale.p
     # Leggi il file CSV
     df_ycsb_scale = pd.read_csv(file_path)
     
-    # Dividi i dati per workload A e B
+    # Split data for workloads A and B
     df_ycsb_scale_A = df_ycsb_scale[df_ycsb_scale['apps'] == 'A']
     df_ycsb_scale_B = df_ycsb_scale[df_ycsb_scale['apps'] == 'B']
-    
-    # Imposta il font globale a un font serif comune
+
+    # Set the global font to a common serif font
     plt.rcParams['font.family'] = 'serif'
-    
-    # Crea figura con due subplot
+
+    # Create figure with two subplots
     fig = plt.figure(figsize=figsize)
     gs = fig.add_gridspec(1, 2, hspace=0.1, wspace=0.2)
     ax = gs.subplots(sharey="row", sharex="row")
-    
-    # Definisci i marker e i colori da usare
+
+    # Define markers and colors to use
     markers = ["o", "s", "v", "D", "X"]
-    # Palette di colori coerente
+    # Consistent color palette
     colors = ['#1f78b4', '#fdbf6f', '#ff7f00', '#add8e6']
 
-    
-    # Lista per le etichette della legenda
+    # Labels list for the legend
     legend_labels = ["MOESI", 
                      "MESI-Br", "CXL-Br"]
     
-    # Plot dei dati per YCSB-A
+    # Plot data for YCSB-A
     for i, protocol in enumerate(df_ycsb_scale_A['protocol'].unique()):
         subset = df_ycsb_scale_A[df_ycsb_scale_A['protocol'] == protocol]
         ax[0].plot(subset['threads'], subset['throughput'], 
                   marker=markers[i], label=legend_labels[i] if i < len(legend_labels) else protocol,
                   color=colors[i], linewidth=1.5, markersize=5)
     
-    # Plot dei dati per YCSB-B
+    # Plot data for YCSB-B
     for i, protocol in enumerate(df_ycsb_scale_B['protocol'].unique()):
         subset = df_ycsb_scale_B[df_ycsb_scale_B['protocol'] == protocol]
         ax[1].plot(subset['threads'], subset['throughput'], 
                   marker=markers[i], label=legend_labels[i] if i < len(legend_labels) else protocol,
                   color=colors[i], linewidth=1.5, markersize=5)
     
-    # Configura il primo subplot (YCSB-A)
+    # Configure the first subplot (YCSB-A)
     ax[0].spines["top"].set_visible(False)
     ax[0].spines["right"].set_visible(False)
     ax[0].set_axisbelow(True)
@@ -66,7 +65,7 @@ def plot_ycsb_scaling(file_path, output_filename="data/figures/gem5-ycsb-scale.p
     ax[0].set_title(YCSB_DESCRIPTIONS['A'], y=1, x=0.51,pad=-10, fontsize=10, 
                   loc="center", backgroundcolor="white", fontweight='bold')
     
-    # Configura il secondo subplot (YCSB-B)
+    # Configure the second subplot (YCSB-B)
     ax[1].spines["top"].set_visible(False)
     ax[1].spines["right"].set_visible(False)
     ax[1].set_axisbelow(True)
@@ -78,12 +77,12 @@ def plot_ycsb_scaling(file_path, output_filename="data/figures/gem5-ycsb-scale.p
     ax[1].set_title(YCSB_DESCRIPTIONS['B'], y=1, pad=-10, fontsize=10, 
                    loc="center", backgroundcolor="white", fontweight='bold')
     
-    # Crea una legenda comune per entrambi i subplot
+    # Create a shared legend for both subplots
     handles, labels = ax[1].get_legend_handles_labels()
-    # Rimuovi la legenda dal primo subplot
+    # Remove the legend from the first subplot
     ax[0].legend().remove()
     
-    # Aggiungi una legenda compatta al secondo subplot
+    # Add a compact legend to the second subplot
     l = ax[1].legend(
         handles=handles,
         labels=labels,
@@ -103,10 +102,10 @@ def plot_ycsb_scaling(file_path, output_filename="data/figures/gem5-ycsb-scale.p
     
     return fig, ax
 
-# Esempio di utilizzo
+# Example usage
 if __name__ == "__main__":
     try:
-        # Sostituisci con il percorso effettivo del tuo file CSV
+        # Replace with the actual path to your CSV file
         plot_ycsb_scaling("data/plots/gem5-ycsb-scale.csv")
     except Exception as e:
         print(f"Error creating plot: {e}")
