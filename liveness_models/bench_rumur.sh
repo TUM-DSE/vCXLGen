@@ -4,13 +4,16 @@ rm -f checker checker.c output.txt
 
 set -e
 
-printf "========================================\n Generating C Model Checker from Murphi\n========================================\n"
+if [ ! -f checker.c ]; then
+    printf "========================================\n Generating C Model Checker from Murphi\n========================================\n"
+    env time -o rumur_time.txt -v time "$(dirname "$0")/../tools/rumur" *.m -v --symmetry-reduction exhaustive --output checker.c -s 500000000
+fi
 
-env time -o rumur_time.txt -v time "$(dirname "$0")/../tools/rumur" *.m -v --symmetry-reduction exhaustive --output checker.c -s 500000000
 
-printf "\n========================================\n        Compiling Model Checker\n========================================\n"
-
-env time -o cc_time.txt -v cc -std=c11 -march=native -O1 checker.c -lpthread -mcx16 -o checker
+if [ ! -f checker ]; then
+    printf "\n========================================\n        Compiling Model Checker\n========================================\n"
+    env time -o cc_time.txt -v cc -std=c11 -march=native -O1 checker.c -lpthread -mcx16 -o checker
+fi
 
 rm -f time.txt
 rm -f out.txt
