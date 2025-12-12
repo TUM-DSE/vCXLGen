@@ -8,7 +8,7 @@ import os
 
 m5.util.addToPath("/gem5/configs")
 
-parser = argparse.ArgumentParser(description="gem5 setup for C-3 experiments")
+parser = argparse.ArgumentParser(description="gem5 setup for vCXLGen experiments")
 
 parser.add_argument("-c", "--cores", help="Number of cores", type=int, default=2)
 parser.add_argument('-ro', "--redirect-output", help="redirect the output", action='store_true') 
