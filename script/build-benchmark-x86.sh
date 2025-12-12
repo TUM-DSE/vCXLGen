@@ -23,6 +23,7 @@ build_parsec() {
         "dedup"
         "facesim"
         "ferret"
+        "fluidanimate"
         "freqmine"
         "raytrace"
         "streamcluster"

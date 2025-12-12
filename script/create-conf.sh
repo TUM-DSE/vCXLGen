@@ -60,7 +60,6 @@ declare -A parsec_cores=(
     ["swaptions"]=24
     ["vips"]=30
     ["x264"]=2
-    ["fluidanimate"]=16
 )
 
 
@@ -78,7 +77,6 @@ declare -A parsec_args=(
     ["swaptions"]="-ns 32 -sm 5 -nt 16"
     ["vips"]="im_benchmark barbados_256x288.v output.v"
     ["x264"]="--quiet --qp 20 --partitions b8x8,i4x4 --ref 5 --direct auto --b-pyramid --weightb --mixed-refs --no-fast-pskip --me umh --subme 7 --analyse b8x8,i4x4 --threads 2 -o eledream.264 eledream_32x18_1.y4m"
-    ["fluidanimate"]="8 5 in_5K.fluid out.fluid"
 )
 
 declare -A parsec_binary=(
