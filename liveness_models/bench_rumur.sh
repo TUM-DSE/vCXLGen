@@ -16,7 +16,7 @@ rm -f time.txt
 rm -f out.txt
 rm -f err*
 
-env time -o time.txt -v stdbuf --output=L ./checker | tee out.txt
+timeout 18000 env time -o time.txt -v stdbuf --output=L ./checker | tee out.txt
 
 csplit -z out.txt '/Startstate/-2' '{*}' -n 1 -f err -s
 
