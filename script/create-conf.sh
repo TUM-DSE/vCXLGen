@@ -32,7 +32,6 @@ PROTOCOL_CONFIGS=(
 
 # Create output directories
 mkdir -p "${CONFIG_DIR}"
-mkdir -p "${REPO_ROOT}/output"
 
 #------------------------------------------------------------------------------
 # Generate commands.conf header
@@ -331,7 +330,7 @@ if [[ -d "${YCSB_DIR}" && -f "${YCSB_DIR}/ycsbc" ]]; then
                 rel_path="YCSB-C"
                 
                 # YCSB command: ./ycsbc -db lock_stl -threads N -P workloads/workloadX.spec
-                cmd_line="gem5/build/X86_${protocol}/gem5.opt --outdir=${out_dir} --redirect-stdout --redirect-stderr setup/setup.py -c ${cores} --remote-latency ${latency} -rm -ro -- benchmarks/${rel_path}/ycsbc -db lock_stl -threads ${threads} -P benchmarks/${rel_path}/workloads/workload${workload,,}.spec"
+                cmd_line="gem5/build/X86_${protocol}/gem5.opt --outdir=${out_dir} --redirect-stdout --redirect-stderr setup/setup.py -c ${cores} --remote-latency ${latency} -rm -ro -- benchmarks/${rel_path}/ycsbc -remote -db lock_stl -threads ${threads} -P benchmarks/${rel_path}/workloads/workload${workload,,}_10k.spec"
                 echo "ycsb | ${csv_name} | ${workload}_t${threads} | ${cmd_line}" >> "${COMMANDS_FILE}"
             done
         done
