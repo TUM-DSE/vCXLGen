@@ -161,7 +161,32 @@ def extract_histogram_stats(stats_file):
     return result
 
 
+def extract_ycsb_throughput(simerr_file):
+    if not os.path.exists(simerr_file):
+        return None
+
+    import re
+    pattern = re.compile(r'^lock_stl\s+.*\s+(\d+\.?\d*)$')
+    try:
+        with open(simerr_file, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                m = pattern.match(line)
+                if m:
+                    try:
+                        return float(m.group(1))
+                    except ValueError:
+                        continue
+    except Exception:
+        return None
+
+    return None
+
+
 def generate_suite_csv(suite):
+    
     """Generate per-suite CSV (all_parsec.csv, all_splash.csv, all_phoenix.csv)"""
     csv_file = os.path.join(PLOTS_DIR, f"all_{suite}.csv")
     print(f"Generating {csv_file}...")
@@ -323,36 +348,46 @@ def generate_ycsb_csv():
                 if not threads_dir_name.startswith("threads_"):
                     continue
                 
-                threads = int(threads_dir_name.replace("threads_", ""))
+                try:
+                    threads = int(threads_dir_name.replace("threads_", ""))
+                except ValueError:
+                    continue
+
                 threads_dir = os.path.join(protocol_dir, threads_dir_name)
                 
-                stats_file = os.path.join(threads_dir, "stats.txt")
-                sim_time = extract_sim_ticks(stats_file)
-                
-                if not sim_time or sim_time == 0:
-                    continue
-                
-                # Default 1M operations
-                ops = 1000000
-                output_file = os.path.join(threads_dir, "output.txt")
-                if os.path.exists(output_file):
-                    try:
-                        with open(output_file, 'r') as f:
-                            for line in f:
-                                match = re.search(r'operations:\s*(\d+)', line)
-                                if match:
-                                    ops = int(match.group(1))
-                                    break
-                    except:
-                        pass
-                
-                # Calculate throughput in Kops/s
-                # sim_time is in ticks, 1 tick = 1ps at 1THz
-                throughput = ops / (sim_time / 1e9)
+                # Try to extract throughput directly from simerr.txt (preferred)
+                simerr_file = os.path.join(threads_dir, "simerr.txt")
+                throughput = extract_ycsb_throughput(simerr_file)
+
+                # Fallback: use simTicks from stats.txt and compute throughput
+                if throughput is None:
+                    stats_file = os.path.join(threads_dir, "stats.txt")
+                    sim_time = extract_sim_ticks(stats_file)
+
+                    if not sim_time or sim_time == 0:
+                        continue
+
+                    ops = 10000
+                    output_file = os.path.join(threads_dir, "output.txt")
+                    if os.path.exists(output_file):
+                        try:
+                            with open(output_file, 'r') as f:
+                                for line in f:
+                                    match = re.search(r'operations:\s*(\d+)', line)
+                                    if match:
+                                        ops = int(match.group(1))
+                                        break
+                        except:
+                            pass
+
+                    # Calculate throughput in Kops/s
+                    # sim_time is in ticks, 1 tick = 1ps at 1THz
+                    throughput = ops / (sim_time / 1e9)
                 
                 # Add to all CSV (only 8 threads)
                 if threads == 8:
-                    all_rows.append({
+                    if protocol != "MOESI_no-lat":
+                        all_rows.append({
                         'apps': workload,
                         'protocol': protocol,
                         'threads': threads,
@@ -361,7 +396,8 @@ def generate_ycsb_csv():
                 
                 # Add to scale CSV (workloads A and B)
                 if workload in ['A', 'B']:
-                    scale_rows.append({
+                    if protocol != "MOESI_no-lat":
+                        scale_rows.append({
                         'apps': workload,
                         'protocol': protocol,
                         'threads': threads,
@@ -369,6 +405,10 @@ def generate_ycsb_csv():
                         'throughput': throughput
                     })
     
+    scale_rows.sort(key=lambda x: (x['apps'], x['protocol'], x['threads']))
+    
+    all_rows.sort(key=lambda x: (x['apps'], x['protocol']))
+
     # Write CSVs
     if all_rows:
         with open(csv_all, 'w', newline='') as f:
