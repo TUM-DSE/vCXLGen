@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import os
 
 # Definitions of YCSB descriptions
 YCSB_DESCRIPTIONS = {
@@ -32,7 +33,7 @@ def plot_ycsb_scaling(file_path, output_filename="data/figures/gem5-ycsb-scale.p
     # Define markers and colors to use
     markers = ["o", "s", "v", "D", "X"]
     # Consistent color palette
-    colors = ['#1f78b4', '#fdbf6f', '#ff7f00', '#add8e6']
+    colors = ['#1f78b4', '#fdbf6f', '#ff7f00']
 
     # Labels list for the legend
     legend_labels = ["MOESI", 
@@ -97,8 +98,11 @@ def plot_ycsb_scaling(file_path, output_filename="data/figures/gem5-ycsb-scale.p
     )
     
     plt.tight_layout()
-    plt.savefig(output_filename, format="pdf", pad_inches=0.05, bbox_inches="tight", dpi=300)
-    print(f"Plot saved as {output_filename}")
+    # Ensure output directory exists and save to standardized filename
+    os.makedirs(os.path.join("data", "figures"), exist_ok=True)
+    out_path = os.path.join("data", "figures", "fig14.pdf")
+    plt.savefig(out_path, format="pdf", pad_inches=0.05, bbox_inches="tight", dpi=300)
+    print(f"Plot saved as {out_path}")
     
     return fig, ax
 

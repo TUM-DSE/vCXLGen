@@ -4,12 +4,22 @@ import numpy as np
 import matplotlib.ticker as ticker
 import os
 
+
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.dirname(SCRIPT_DIR)
+DATA_DIR = os.path.join(REPO_ROOT, "data")
+PLOTS_DIR = os.path.join(DATA_DIR, "plots")
+FIGURES_DIR = os.path.join(DATA_DIR, "figures")
+
+# Ensure figures directory exists
+os.makedirs(FIGURES_DIR, exist_ok=True)
 # Set serif font globally (similar to Times New Roman)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['font.size'] = 12  # Increase default font size to 12
 
 # Read the CSV file
-df = pd.read_csv("plots/all.csv", index_col=False)
+df = pd.read_csv(os.path.join(PLOTS_DIR, "all.csv"), index_col=False)
 print(f"File loaded successfully. Rows: {len(df)}")
 
 # Plot settings
@@ -49,69 +59,6 @@ if missing_columns:
 
 # Create a new DataFrame with only the necessary columns
 df_reduced = df[["apps", "protocol"] + columns].copy()
-
-# Create a debug file
-with open("debug_normalization.txt", "w") as debug_file:
-    debug_file.write("=== LLC NORMALIZATION ===\n\n")
-    
-    # Calculate reference values for each app (LLC sum for MOESI_gem5)
-    reference_values = {}
-    for app in df_reduced["apps"].unique():
-        app_data = df_reduced[df_reduced["apps"] == app]
-        moesi_data = app_data[app_data["protocol"] == "MOESI_gem5"]
-        
-        if len(moesi_data) > 0:
-            # Sum of LLC components for MOESI_gem5
-            llc_total = sum(moesi_data[col].iloc[0] for col in columns)
-            reference_values[app] = llc_total
-            
-            # Write to debug file
-            debug_file.write(f"App: {app}\n")
-            debug_file.write(f"  MOESI_gem5 LLC total: {llc_total:.6f}\n")
-            debug_file.write("  MOESI_gem5 original values:\n")
-            for col in columns:
-                debug_file.write(f"    {col}: {moesi_data[col].iloc[0]:.6f}\n")
-            
-            # Normalize MOESI_gem5 to 1.0 total
-            if llc_total > 0:
-                debug_file.write("  MOESI_gem5 normalized values:\n")
-                for col in columns:
-                    normalized_value = moesi_data[col].iloc[0] / llc_total
-                    df_reduced.loc[moesi_data.index, col] = normalized_value
-                    debug_file.write(f"    {col}: {normalized_value:.6f}\n")
-            
-            # Write information for other protocols
-            debug_file.write("\n  Other protocols:\n")
-            for protocol in ["MESI_MESI_MESI", "MESI_CXL_MESI"]:
-                prot_data = app_data[app_data["protocol"] == protocol]
-                if len(prot_data) > 0:
-                    debug_file.write(f"    {protocol} original values:\n")
-                    for col in columns:
-                        debug_file.write(f"      {col}: {prot_data[col].iloc[0]:.6f}\n")
-            debug_file.write("\n")
-
-    debug_file.write("\n=== NORMALIZATION OF OTHER PROTOCOLS ===\n\n")
-    
-    # Normalize other protocols relative to MOESI_gem5
-    for app in df_reduced["apps"].unique():
-        if app in reference_values:
-            debug_file.write(f"App: {app}\n")
-            for protocol in ["MESI_MESI_MESI", "MESI_CXL_MESI"]:
-                protocol_data = df_reduced[(df_reduced["apps"] == app) & (df_reduced["protocol"] == protocol)]
-                
-                if len(protocol_data) > 0 and reference_values[app] > 0:
-                    debug_file.write(f"  {protocol} normalized values:\n")
-                    idx = protocol_data.index[0]
-                    for col in columns:
-                        original_value = protocol_data[col].iloc[0]
-                        normalized_value = original_value / reference_values[app]
-                        df_reduced.at[idx, col] = normalized_value
-                        debug_file.write(f"    {col}: {original_value:.6f} -> {normalized_value:.6f}\n")
-            debug_file.write("\n")
-
-# Save the normalized DataFrame for verification
-df_reduced.to_csv("normalized_llc_data.csv", index=False)
-print("Normalized DataFrame saved as 'normalized_llc_data.csv' for verification")
 
 def plot_breakdown(title, df, order, text_points=[]):
     # Create the plot
@@ -304,8 +251,9 @@ def plot_breakdown(title, df, order, text_points=[]):
     
     # Adjust layout and save - increase bottom space for multi-line labels
     # plt.subplots_adjust(left=0.14, right=0.55, top=0.90, bottom=0.24)  # Increased bottom margin
-    plt.savefig("gem5-breakdown.pdf", dpi=300, pad_inches=0.05, bbox_inches="tight")
-    print(f"Plot saved as gem5-breakdown-modified.pdf")
+    out_path = os.path.join(FIGURES_DIR, "fig12.pdf")
+    plt.savefig(out_path, dpi=300, pad_inches=0.05, bbox_inches="tight")
+    print(f"Plot saved as {out_path}")
     
     return fig, ax
 

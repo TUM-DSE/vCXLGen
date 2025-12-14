@@ -2,10 +2,21 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import os
 
-df_parsec = pd.read_csv("plots/all_parsec.csv", index_col=False)
-df_splash = pd.read_csv("plots/all_splash.csv")
-df_phoenix = pd.read_csv("plots/all_phoenix.csv")
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.dirname(SCRIPT_DIR)
+DATA_DIR = os.path.join(REPO_ROOT, "data")
+PLOTS_DIR = os.path.join(DATA_DIR, "plots")
+FIGURES_DIR = os.path.join(DATA_DIR, "figures")
+
+# Ensure figures directory exists
+os.makedirs(FIGURES_DIR, exist_ok=True)
+
+df_parsec = pd.read_csv(os.path.join(PLOTS_DIR, "all_parsec.csv"), index_col=False)
+df_splash = pd.read_csv(os.path.join(PLOTS_DIR, "all_splash.csv"))
+df_phoenix = pd.read_csv(os.path.join(PLOTS_DIR, "all_phoenix.csv"))
 
 PARSEC_ORDER = (
     "canneal",
@@ -122,7 +133,9 @@ def create_modified_combined_plot():
         linewidth=0.5,
         ylim=(0,1.7),
         edgecolor="#595959",
-        width=0.6
+        width=0.6,
+        color=['#1f78b4', '#fdbf6f', '#ff7f00'],
+        zorder=3  
     )
     
     ax.tick_params(
@@ -191,7 +204,9 @@ def create_modified_combined_plot():
     l.get_frame().set_facecolor('#ffffff')
     
     plt.tight_layout()
-    plt.savefig("gem5-modified-combined.pdf", dpi="figure", pad_inches=0.05, bbox_inches="tight")
+    out_path = os.path.join(FIGURES_DIR, "fig11.pdf")
+    plt.savefig(out_path, dpi="figure", pad_inches=0.05, bbox_inches="tight")
+    print(f"Plot saved as {out_path}")
     
     return ax
 

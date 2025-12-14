@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib.patches import Rectangle
+import os
 
 # Define the order for YCSB applications with correct English descriptions
 YCSB_DESCRIPTIONS = {
@@ -75,8 +76,10 @@ def plot_ycsb(file_path, metric='throughput', figsize=(7,2.5), save=True):
                 kind="bar",
                 ax=ax,
                 linewidth=0.5,
-                ylim=(0, 450),  # Use the checked y_max value
+                ylim=(0, 550),  # Use the checked y_max value
                 edgecolor="#595959",
+                color=['#1f78b4', '#fdbf6f', '#ff7f00'],
+                zorder=3  
     )
     
     ax.tick_params(
@@ -97,12 +100,11 @@ def plot_ycsb(file_path, metric='throughput', figsize=(7,2.5), save=True):
             )
     ax.tick_params(
                 axis='x',
-                pad=5,
+                pad=1,
             )
             
     # Set empty tick labels to remove the x-axis labels
-    ax.set_xticklabels([], rotation=0)  # Empty list to remove all x-axis tick labels
-    
+    ax.set_xticklabels(df_pivot.index, rotation=0, fontsize=11)    
     hatches = ( "", "", r"\\",)
     bars = ax.patches
     num_groups = len(ax.get_xticks())
@@ -177,9 +179,7 @@ def plot_ycsb(file_path, metric='throughput', figsize=(7,2.5), save=True):
     # Text box style properties
     props = dict(boxstyle='round', facecolor='white', alpha=0.9, edgecolor='gray', pad=0.3)
     
-    # ---- CUSTOMIZABLE POSITIONS FOR WORKLOAD DESCRIPTION BOXES ----
-    # Dictionary to store x, y positions for each workload box
-    # Values are in axis coordinates (0-1 range)
+
     workload_box_positions = {
         'A': {'x': 0.1, 'y': 0.1},
         'B': {'x': 0.3, 'y': 0.1},
@@ -194,7 +194,7 @@ def plot_ycsb(file_path, metric='throughput', figsize=(7,2.5), save=True):
     
     # Add a text box for each workload with a smaller font size
     for app in actual_apps:
-        pos = workload_box_positions.get(app, {'x': 0.5, 'y': -0.3})  # Default position if not specified
+        pos = workload_box_positions.get(app, {'x': 0.5, 'y': 0})  # Default position if not specified
         ax.text(pos['x'], pos['y'], YCSB_FULL_DESCRIPTIONS[app], 
                 transform=ax.transAxes, fontsize=8,
                 verticalalignment='center', horizontalalignment='center', 
@@ -205,7 +205,10 @@ def plot_ycsb(file_path, metric='throughput', figsize=(7,2.5), save=True):
     plt.subplots_adjust(bottom=0.27)  # Adjust this value to make room for the boxes
     
     if save:
-        plt.savefig(f"data/figures/gem5-ycsb-all.pdf", dpi="figure", pad_inches=0.05, bbox_inches="tight")
+        os.makedirs("data/figures", exist_ok=True)
+        out_path = os.path.join("data", "figures", "fig13.pdf")
+        plt.savefig(out_path, dpi="figure", pad_inches=0.05, bbox_inches="tight")
+        print(f"Plot saved as {out_path}")
     
     return fig, ax
 
