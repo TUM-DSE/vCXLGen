@@ -94,12 +94,13 @@ component_latency = 10
 local_latency = 10
 
 #remote_addr_vaddr = 0x20000000
-remote_addr_vaddr = 0x10000000
-remote_addr_range = AddrRange(
-    start=2**40,
-    #size=2**23
-    size=2**30
-)
+if args.remote_memory: 
+    remote_addr_vaddr = 0x10000000
+    remote_addr_range = AddrRange(
+        start=2**40,
+        #size=2**23
+        size=2**30
+    )
 
 mem_ctrl = MemCtrl()
 mem_ctrl.dram = DDR5_4400_4x8()()
@@ -231,7 +232,8 @@ for cpu in system.cpu:
 
 root = Root(full_system=False, system=system)
 m5.instantiate()
-process.map(remote_addr_vaddr, remote_addr_range.start, remote_addr_range.size())
+if args.remote_memory:
+    process.map(remote_addr_vaddr, remote_addr_range.start, remote_addr_range.size())
 print(f"Beginning simulation!")
 exit_event = m5.simulate()
 print(f"Exiting @ tick {m5.curTick()} because {exit_event.getCause()}")
