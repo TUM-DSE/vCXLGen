@@ -44,3 +44,8 @@ for PROTOCOL in "${PROTOCOLS[@]}"; do
     echo "Done: ${BUILD_DIR}/gem5.opt"
 done
 
+cd "${GEM5_DIR}/util/m5"
+scons build/x86/out/m5
+
+cd "${GEM5_DIR}"
+
