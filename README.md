@@ -214,7 +214,7 @@ vCXLGen-Artifact/
 │   ├── build-benchmark-x86.sh   # Build X86 benchmarks
 │   ├── create-conf.sh       # Generate experiment configurations
 │   ├── run.sh               # Run all experiments
-│   ├── run-benchmarks.sh    # Run PARSEC/SPLASH/Phoenix (Fig 11,12,16,17)
+│   ├── run-benchmarks.sh    # Run PARSEC/SPLASH/Phoenix (Fig 11,12)
 │   ├── run-ycsb.sh          # Run YCSB experiments (Fig 13,14)
 │   ├── extract-stats.sh     # Extract statistics to CSV
 │   ├── plot.sh              # Generate all plots
