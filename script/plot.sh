@@ -54,15 +54,9 @@ echo ""
 
 # Step 1: Extract statistics (generate CSVs)
 if [[ "${SKIP_EXTRACT}" == "false" ]]; then
-    echo ">>> Step 1: Extracting statistics..."
+    echo ">> Step 1: Extracting statistics..."
     echo ""
-    
-    if [[ ! -f "${SCRIPT_DIR}/extract-stats.py" ]]; then
-        echo "ERROR: extract-stats.py not found"
-        exit 1
-    fi
-    
-    bash "$python3 {SCRIPT_DIR}/extract-stats.py"
+    python3 "${SCRIPT_DIR}/extract-stats.py"
     
     echo ""
     echo ">>> Statistics extraction complete"
