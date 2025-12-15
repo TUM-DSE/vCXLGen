@@ -396,16 +396,16 @@ We provide a small functional validation harness that runs selected YCSB-C workl
 - Protocols tested: `MOESI_CMP_directory_edit`, `MESI_unord`, `MESI_unord_CXL`
 - Expected total runtime: ~15 minutes
 
-The validation script runs each workload for the three protocols and records a simple throughput value per run. Results are written to:
-
-```
-data/functional/results.txt
-```
-
 Run the functional validation with:
 
 ```bash
 ./script/run-functional.sh
+```
+
+The validation script runs each workload for the three protocols and records a simple throughput value per run. Results are written to:
+
+```
+data/functional/results.txt
 ```
 
 
