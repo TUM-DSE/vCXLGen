@@ -510,11 +510,7 @@ The extraction script generates:
 - `data/plots/gem5-ycsb-all.csv` - YCSB throughput
 - `data/plots/gem5-ycsb-scale.csv` - YCSB scaling data
 
----
-
-## YCSB Workloads
-
-## Generated Figures
+### Generated Figures
 
 The plotting pipeline writes final figure files into the `data/figures/` directory. The main files produced by the plotting scripts are:
 
