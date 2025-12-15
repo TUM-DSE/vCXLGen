@@ -6,7 +6,7 @@ set -e
 
 if [ ! -f checker.c ]; then
     printf "========================================\n Generating C Model Checker from Murphi\n========================================\n"
-    env time -o rumur_time.txt -v time "$(dirname "$0")/../tools/rumur" *.m -v --symmetry-reduction exhaustive --output checker.c -s 500000000
+    env time -o rumur_time.txt -v time "$(dirname "$0")/../tools/rumur_src/build/rumur/rumur" *.m -v --symmetry-reduction exhaustive --output checker.c -s 500000000
 fi
 
 

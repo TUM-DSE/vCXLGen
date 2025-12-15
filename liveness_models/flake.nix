@@ -4,9 +4,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+
+    tool_packages = {
+      url = "path:../tools/";
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils}:
+  outputs = { self, nixpkgs, flake-utils, tool_packages}:
     flake-utils.lib.eachDefaultSystem ( system:
       let
         pkgs = import nixpkgs {
@@ -16,6 +20,10 @@
         pythonPackages = pkgs.python3Packages;
       in {
         devShell = pkgs.mkShell {
+          inputsFrom = [
+            tool_packages.devShell.${system}
+          ];
+
           packages = with pkgs;[
             gcc
             bison
