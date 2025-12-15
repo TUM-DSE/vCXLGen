@@ -44,14 +44,14 @@ def plot_ycsb_scaling(file_path, output_filename="data/figures/gem5-ycsb-scale.p
         subset = df_ycsb_scale_A[df_ycsb_scale_A['protocol'] == protocol]
         ax[0].plot(subset['threads'], subset['throughput'], 
                   marker=markers[i], label=legend_labels[i] if i < len(legend_labels) else protocol,
-                  color=colors[i], linewidth=1.5, markersize=5)
+                  color=colors[i], linewidth=1.5, markersize=3)
     
     # Plot data for YCSB-B
     for i, protocol in enumerate(df_ycsb_scale_B['protocol'].unique()):
         subset = df_ycsb_scale_B[df_ycsb_scale_B['protocol'] == protocol]
         ax[1].plot(subset['threads'], subset['throughput'], 
                   marker=markers[i], label=legend_labels[i] if i < len(legend_labels) else protocol,
-                  color=colors[i], linewidth=1.5, markersize=5)
+                  color=colors[i], linewidth=1.5, markersize=3)
     
     # Configure the first subplot (YCSB-A)
     ax[0].spines["top"].set_visible(False)
