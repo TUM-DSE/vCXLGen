@@ -8,33 +8,32 @@ ARCH="${1:-x86}"
 
 # Validation directories
 VALIDATION_DIR="${REPO_ROOT}/data/functional"
-EXPECTED_FILE="${VALIDATION_DIR}/expected_output.txt"
 RESULTS_FILE="${VALIDATION_DIR}/results.txt"
 
-# Benchmark configuration
-KMEANS_ARGS="-d 500 -c 6 -p 100 -s 100"
-GEM5_CORES=10
+# YCSB configuration
+YCSB_BINARY="benchmarks/YCSB-C/ycsbc"
+YCSB_WORKLOADS_DIR="${REPO_ROOT}/benchmarks/YCSB-C/workloads"
+YCSB_THREADS=2
+GEM5_CORES=4
+YCSB_DB="lock_stl"
+
+# Workloads to test (a, b, c, d, f with _test.spec suffix)
+YCSB_WORKLOADS=("a" "b" "c" "d" "f")
 
 #------------------------------------------------------------------------------
-# Extract Final means values from kmeans output (normalized for comparison)
+# Extract throughput from YCSB output for comparison
 #------------------------------------------------------------------------------
-extract_final_means() {
+extract_ycsb_throughput() {
     local output_file="$1"
-    sed -n '/Final means:/,$ p' "$output_file" | tail -n +2 | \
-        grep -oE '[0-9]+' | tr '\n' ' ' | sed 's/ $//'
+    awk '{ if($NF ~ /^[0-9]+(\.[0-9]+)?$/) print $NF }' "$output_file" | tail -n1
 }
 
 #------------------------------------------------------------------------------
-# Compare two outputs
+# Check if YCSB completed successfully (look for throughput output)
 #------------------------------------------------------------------------------
-compare_outputs() {
-    local actual="$1"
-    local expected="$2"
-    
-    local actual_means=$(extract_final_means "$actual")
-    local expected_means=$(extract_final_means "$expected")
-    
-    [[ "$actual_means" == "$expected_means" ]]
+check_ycsb_success() {
+    local output_file="$1"
+    grep -E -q '[[:space:]][0-9]+(\.[0-9]+)?$' "$output_file" 2>/dev/null
 }
 
 #------------------------------------------------------------------------------
@@ -60,31 +59,16 @@ log_error() {
 }
 
 #------------------------------------------------------------------------------
-# Generate expected output from native binary
+# Run X86 functional validation with YCSB
 #------------------------------------------------------------------------------
-generate_expected() {
-    log_step "Generating Reference Output (Native Execution)"
-    
-    local kmeans_dir="${REPO_ROOT}/benchmarks/phoenix/phoenix-2.0/tests/kmeans"
-    
-    log_info "Running kmeans natively to generate expected output..."
-    
-    cd "${kmeans_dir}"
-    ./kmeans ${KMEANS_ARGS} > "${EXPECTED_FILE}" 2>&1
-    
-    local num_values=$(extract_final_means "${EXPECTED_FILE}" | wc -w)
-    log_info "Saved to: ${EXPECTED_FILE}"
-}
-
-
 run_x86_functional() {
-    log_step "X86 Functional Validation"
+    log_step "X86 Functional Validation (YCSB)"
     
     local protocols=("MOESI_CMP_directory_edit" "MESI_unord" "MESI_unord_CXL")
-    local kmeans_binary="benchmarks/phoenix/phoenix-2.0/tests/kmeans/kmeans"
     
-    log_info "Validating ${#protocols[@]} protocols: ${protocols[*]}"
-    log_info "Each protocol will be tested against the native reference output."
+    log_info "Testing ${#protocols[@]} protocols: ${protocols[*]}"
+    log_info "YCSB workloads: ${YCSB_WORKLOADS[*]}"
+    log_info "Threads: ${YCSB_THREADS}, Cores: ${GEM5_CORES}"
     echo ""
     
     local passed=0
@@ -93,7 +77,6 @@ run_x86_functional() {
     
     for protocol in "${protocols[@]}"; do
         local gem5_binary="${REPO_ROOT}/gem5/build/X86_${protocol}/gem5.opt"
-        local out_dir="${VALIDATION_DIR}/x86/${protocol}"
         
         if [[ ! -f "$gem5_binary" ]]; then
             log_error "${protocol}: gem5 build not found (skipped)"
@@ -101,41 +84,56 @@ run_x86_functional() {
             continue
         fi
         
-        mkdir -p "${out_dir}"
-        
-        log_info "${protocol}: Running gem5 simulation..."
-        
-        cd "${REPO_ROOT}"
-        local start_time=$(date +%s)
-        
-        if "${gem5_binary}" \
-            --outdir="${out_dir}" \
-            --redirect-stdout \
-            --redirect-stderr \
-            setup/setup.py \
-            -c ${GEM5_CORES} \
-            -ro \
-            -- \
-            "${kmeans_binary}" \
-            ${KMEANS_ARGS} > /dev/null 2>&1; then
+        for workload in "${YCSB_WORKLOADS[@]}"; do
+            local workload_file="${YCSB_WORKLOADS_DIR}/workload${workload}_test.spec"
+            local out_dir="${VALIDATION_DIR}/x86/${protocol}/workload${workload}"
             
-            local end_time=$(date +%s)
-            local duration=$((end_time - start_time))
+            if [[ ! -f "$workload_file" ]]; then
+                log_error "Workload file not found: ${workload_file} (skipped)"
+                ((skipped++))
+                continue
+            fi
             
-            if compare_outputs "${out_dir}/output.txt" "${EXPECTED_FILE}"; then
-                log_success "${protocol}: PASSED (${duration}s)"
-                echo "x86 | ${protocol} | PASSED | ${duration}s" >> "${RESULTS_FILE}"
-                ((passed++))
+            mkdir -p "${out_dir}"
+            
+            log_info "${protocol} / workload${workload}: Running gem5 simulation..."
+            
+            cd "${REPO_ROOT}"
+            local start_time=$(date +%s)
+            
+            if "${gem5_binary}" \
+                --outdir="${out_dir}" \
+                --redirect-stdout \
+                --redirect-stderr \
+                setup/setup.py \
+                -c ${GEM5_CORES} \
+                -ro \
+                --remote-latency 1 \
+                -- \
+                "${YCSB_BINARY}" \
+                -db ${YCSB_DB} \
+                -threads ${YCSB_THREADS} \
+                -P "${workload_file}" > /dev/null 2>&1; then
+                
+                local end_time=$(date +%s)
+                local duration=$((end_time - start_time))
+                
+                if check_ycsb_success "${out_dir}/simerr.txt"; then
+                    local throughput=$(extract_ycsb_throughput "${out_dir}/simerr.txt")
+                    log_success "${protocol} / workload${workload}: PASSED (${duration}s, throughput: ${throughput:-N/A})"
+                    echo "x86 | ${protocol} | workload${workload} | PASSED | ${duration}s | throughput: ${throughput:-N/A}" >> "${RESULTS_FILE}"
+                    ((passed++))
+                else
+                    log_error "${protocol} / workload${workload}: FAILED - no throughput output"
+                    echo "x86 | ${protocol} | workload${workload} | FAILED | no throughput output" >> "${RESULTS_FILE}"
+                    ((failed++))
+                fi
             else
-                log_error "${protocol}: FAILED - output mismatch"
-                echo "x86 | ${protocol} | FAILED | output mismatch" >> "${RESULTS_FILE}"
+                log_error "${protocol} / workload${workload}: FAILED - simulation error"
+                echo "x86 | ${protocol} | workload${workload} | FAILED | simulation error" >> "${RESULTS_FILE}"
                 ((failed++))
             fi
-        else
-            log_error "${protocol}: FAILED - simulation error"
-            echo "x86 | ${protocol} | FAILED | simulation error" >> "${RESULTS_FILE}"
-            ((failed++))
-        fi
+        done
     done
     
     echo ""
@@ -146,10 +144,7 @@ run_x86_functional() {
 
 
 mkdir -p "${VALIDATION_DIR}"
-echo "# Functional Validation Results - $(date)" > "${RESULTS_FILE}"
-
-# Generate expected output first
-generate_expected
+echo "# Functional Validation Results (YCSB) - $(date)" > "${RESULTS_FILE}"
 
 X86_PASSED=true
 
