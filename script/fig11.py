@@ -186,9 +186,9 @@ def create_modified_combined_plot():
     handles, previous_labels = ax.get_legend_handles_labels()
     l = ax.legend(
         title=None,
-        loc=(0.005,.77),
+        loc=(0.005,.87),
         frameon=True,
-        ncol=2,
+        ncol=3,
         labelspacing=0,
         columnspacing=1,
         borderpad=0,
