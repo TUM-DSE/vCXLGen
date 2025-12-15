@@ -216,7 +216,7 @@ vCXLGen-Artifact/
 │   ├── run.sh               # Run all experiments
 │   ├── run-benchmarks.sh    # Run PARSEC/SPLASH/Phoenix (Fig 11,12)
 │   ├── run-ycsb.sh          # Run YCSB experiments (Fig 13,14)
-│   ├── extract-stats.sh     # Extract statistics to CSV
+│   ├── extract-stats.py     # Extract statistics to CSV
 │   ├── plot.sh              # Generate all plots
 │   ├── fig11.py             # Performance comparison plot
 │   ├── fig12.py             # LLC breakdown plot
@@ -514,12 +514,12 @@ The extraction script generates:
 
 ## YCSB Workloads
 
-| Workload | Description |
-|----------|-------------|
-| A | 50% Read, 50% Update |
-| B | 95% Read, 5% Update |
-| C | 100% Read |
-| D | 95% Read, 5% Insert |
-| F | 50% Read, 50% Read-Modify-Write |
+## Generated Figures
 
+The plotting pipeline writes final figure files into the `data/figures/` directory. The main files produced by the plotting scripts are:
+
+- `data/figures/fig11.pdf` — Performance comparison (mean + selected applications) produced by `script/fig11.py`
+- `data/figures/fig12.pdf` — LLC hits/misses breakdown produced by `script/fig12.py`
+- `data/figures/fig13.pdf` — YCSB throughput at 8 threads produced by `script/fig13.py`
+- `data/figures/fig14.pdf` — YCSB scaling with thread counts produced by `script/fig14.py`
 ---
