@@ -179,12 +179,12 @@ i = 1
 for _, row in dfa.iterrows():
     if row['incomplete']:
         print(i)
-        ax1.text(0, y_positions[-i], " ✖ OOM >1.8 TB", color='black', verticalalignment='center', horizontalalignment="left", fontsize=11)
+        ax1.text(0, y_positions[-i], " ✖ OOM ", color='black', verticalalignment='center', horizontalalignment="left", fontsize=11)
         i += 1
 
 # for i, row in dfa.iterrows():
 #     if row['incomplete']:
-#         ax.text(max_value * 1.09, i - 22 + bar_width, "⚡ OOM >1.8 TB", color='firebrick', verticalalignment='center', horizontalalignment="right", path_effects=[path_effects.withStroke(linewidth=1.5, foreground='white')])
+#         ax.text(max_value * 1.09, i - 22 + bar_width, "⚡ OOM ", color='firebrick', verticalalignment='center', horizontalalignment="right", path_effects=[path_effects.withStroke(linewidth=1.5, foreground='white')])
 
 # Plot the second set of bars first
 bars3 = ax2.barh(y_positions, dfa[c_verif_time], height=0.3, label=c_verif_time, edgecolor=custom_colors[0])
@@ -228,7 +228,7 @@ for y_pos, label in zip([0, 1.3, 2.7],  ["Deadlock Freedom ↓", "Extended Liven
 i = 1
 for _, row in dfa.iterrows():
     if row['incomplete']:
-        ax2.text(0, y_positions[-i], " ✖ OOM >1.8 TB", color='black', verticalalignment='center', horizontalalignment="left", fontsize=11)
+        ax2.text(0, y_positions[-i], " ✖ OOM ", color='black', verticalalignment='center', horizontalalignment="left", fontsize=11)
         i += 1
 
 
@@ -316,11 +316,11 @@ ax1.set_ylim(ymax=y_positions[-1] + 0.8)
 
 for i, row in dfa.iterrows():
     if row['incomplete']:
-        ax1.text(0, y_positions[i - 22], " ✖ OOM >1.8 TB", color='black', verticalalignment='center', horizontalalignment="left", fontsize=11)
+        ax1.text(0, y_positions[i - 22], " ✖ OOM ", color='black', verticalalignment='center', horizontalalignment="left", fontsize=11)
 
 # for i, row in dfa.iterrows():
 #     if row['incomplete']:
-#         ax.text(max_value * 1.09, i - 22 + bar_width, "⚡ OOM >1.8 TB", color='firebrick', verticalalignment='center', horizontalalignment="right", path_effects=[path_effects.withStroke(linewidth=1.5, foreground='white')])
+#         ax.text(max_value * 1.09, i - 22 + bar_width, "⚡ OOM ", color='firebrick', verticalalignment='center', horizontalalignment="right", path_effects=[path_effects.withStroke(linewidth=1.5, foreground='white')])
 
 # Plot the second set of bars first
 bars3 = ax2.barh(y_positions, dfa[c_verif_time], height=0.3, label=c_verif_time, edgecolor=custom_colors[0])
@@ -359,7 +359,7 @@ for y_pos, label in zip([0, 1.3, 2.7],  ["Deadlock Freedom ↓", "Extended Liven
 
 for i, row in dfa.iterrows():
     if row['incomplete']:
-        ax2.text(0, y_positions[i - 22], " ✖ OOM >1.8 TB", color='black', verticalalignment='center', horizontalalignment="left", fontsize=11)
+        ax2.text(0, y_positions[i - 22], " ✖ OOM ", color='black', verticalalignment='center', horizontalalignment="left", fontsize=11)
 
 
 ax2.spines[['right', 'top']].set_visible(False)
@@ -493,7 +493,7 @@ for y_pos, label in zip([0, 1.3, 2.7],  ["Deadlock Freedom ↓", "Extended Liven
 i = 2
 for _, row in dfa.iterrows():
     if row['incomplete']:
-        ax2.text(0, y_positions[-i], " ✖ Estimated >38 days", color='black', verticalalignment='center', horizontalalignment="left", fontsize=11)
+        ax2.text(0, y_positions[-i], " ✖ ", color='black', verticalalignment='center', horizontalalignment="left", fontsize=11)
         i += 1
 
 ax2.spines[['right', 'top']].set_visible(False)
