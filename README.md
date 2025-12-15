@@ -387,6 +387,29 @@ To build only YCSB:
 - **Phoenix**: 7 applications (histogram, kmeans, linear_regression, etc.)
 - **YCSB-C**: 5 workloads (A, B, C, D, F)
 
+### Functional Validation (YCSB)
+
+We provide a small functional validation harness that runs selected YCSB-C workloads as a correctness check across the evaluated coherence protocols.
+
+- Script: `script/run-functional.sh`
+- Workloads: YCSB A, B, C, D, F (the `_test.spec` variants in `benchmarks/YCSB-C/workloads`)
+- YCSB client threads: `-threads 2` (2 client threads)
+- Protocols tested: `MOESI_CMP_directory_edit`, `MESI_unord`, `MESI_unord_CXL`
+- Expected total runtime: ~15 minutes
+
+The validation script runs each workload for the three protocols and records a simple throughput value per run. Results are written to:
+
+```
+data/functional/results.txt
+```
+
+Run the functional validation with:
+
+```bash
+./script/run-functional.sh
+```
+
+
 ---
 
 ## Run Experiments
