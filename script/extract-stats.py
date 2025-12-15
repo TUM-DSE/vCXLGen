@@ -13,7 +13,7 @@ PLOTS_DIR = os.path.join(DATA_DIR, "plots")
 
 SUITES = ["parsec", "splash", "phoenix"]
 
-PROTOCOLS = ["MOESI_no-lat", "MOESI_gem5", "MESI_MESI_MESI", "MESI_CXL_MESI"]
+PROTOCOLS = ["MOESI_gem5", "MESI_MESI_MESI", "MESI_CXL_MESI"]
 
 REFERENCE_PROTOCOL = "MOESI_gem5"
 
@@ -386,8 +386,7 @@ def generate_ycsb_csv():
                 
                 # Add to all CSV (only 8 threads)
                 if threads == 8:
-                    if protocol != "MOESI_no-lat":
-                        all_rows.append({
+                    all_rows.append({
                         'apps': workload,
                         'protocol': protocol,
                         'threads': threads,
@@ -396,8 +395,7 @@ def generate_ycsb_csv():
                 
                 # Add to scale CSV (workloads A and B)
                 if workload in ['A', 'B']:
-                    if protocol != "MOESI_no-lat":
-                        scale_rows.append({
+                    scale_rows.append({
                         'apps': workload,
                         'protocol': protocol,
                         'threads': threads,

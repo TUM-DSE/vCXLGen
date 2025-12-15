@@ -27,7 +27,6 @@ This repository contains the artifact for verifying and evaluating CXL-based cac
 
 | CSV Name | gem5 Protocol | Remote Latency | Description |
 |----------|---------------|----------------|-------------|
-| `MOESI_no-lat` | `MOESI_CMP_directory` | 10 cycles | Two MOESI cluster connected through MOESI coherence (local memory access time) |
 | `MOESI_gem5` | `MOESI_CMP_directory` | 140 cycles | Two MOESI cluster connected through MOESI coherence (450 ns RTT for memory access) |
 | `MESI_MESI_MESI` | `MESI_unord` | 140 cycles | Two MESI cluster connected through MESI coherence |
 | `MESI_CXL_MESI` | `MESI_unord_CXL` | 140 cycles | Two MESI cluster connected through CXL coherence |

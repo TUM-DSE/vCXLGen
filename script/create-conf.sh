@@ -5,7 +5,6 @@
 # This script generates configurations for performance comparison across protocols.
 #
 # Protocols and their mappings:
-#   MOESI_CMP_directory_edit (lat=10)  -> MOESI_no-lat in CSV
 #   MOESI_CMP_directory_edit (lat=140) -> MOESI_gem5 in CSV  
 #   MESI_unord (lat=140)          -> MESI_MESI_MESI in CSV (MESI-Br)
 #   MESI_unord_CXL (lat=140)      -> MESI_CXL_MESI in CSV (CXL-Br)
@@ -24,7 +23,6 @@ OUTPUT_BASE="data/gem5.output"
 # Protocol configurations with latency
 # Format: "protocol_name:latency:csv_name"
 PROTOCOL_CONFIGS=(
-    "MOESI_CMP_directory_edit:10:MOESI_no-lat"
     "MOESI_CMP_directory_edit:140:MOESI_gem5"
     "MESI_unord:140:MESI_MESI_MESI"
     "MESI_unord_CXL:140:MESI_CXL_MESI"
@@ -351,7 +349,6 @@ echo "Generated ${COMMANDS_FILE}"
 echo "=============================================="
 echo ""
 echo "Protocol mappings:"
-echo "  MOESI_CMP_directory_edit (lat=10)  -> MOESI_no-lat"
 echo "  MOESI_CMP_directory_edit (lat=140) -> MOESI_gem5"
 echo "  MESI_unord (lat=140)          -> MESI_MESI_MESI"
 echo "  MESI_unord_CXL (lat=140)      -> MESI_CXL_MESI"
