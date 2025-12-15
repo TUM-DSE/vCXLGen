@@ -31,7 +31,7 @@ hatches = ("", "", "/", "/")
 columns = ["LLC ld hits", "LLC st hits", "LLC ld misses", "LLC st misses"]
 
 # Protocol labels
-labels = [r"$R$", r"$E$", r"$X$"]  # Removed 'L' for MOESI-no-lat
+labels = [r"$R$", r"$E$", r"$X$"]  
 fulllabels = ["$MOESI$", "$MESI$-$Br$", "$CXL$-$Br$"]  # Removed MOESI-110ns
 
 figsize = (7, 2.5)
@@ -110,7 +110,7 @@ def plot_breakdown(title, df, order, text_points=[]):
             color=colors,
             edgecolor=bar_edge_color,
             linewidth=0.5,
-            ylim=(0, 1.8)
+            ylim=(0, 1.5)
         )
         df_bars[index] = df_bar
     
@@ -187,7 +187,7 @@ def plot_breakdown(title, df, order, text_points=[]):
         which='major',
         direction='out',
         length=3,
-        labelsize=10,
+        labelsize=13,
         right=False, top=False, bottom=False
     )
     ax.tick_params(
@@ -195,7 +195,7 @@ def plot_breakdown(title, df, order, text_points=[]):
         which='minor',
         direction='out',
         length=0,
-        labelsize=10,
+        labelsize=13,
         right=False, top=False, bottom=False
     )
     
