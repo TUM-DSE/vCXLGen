@@ -127,7 +127,6 @@ cd ..
 
 ## Install Dependencies
 
-**Verification**
 To install nix with flake support you have multiple options:
 
 **Using the Determinate Nix installer**: simply run:
@@ -140,46 +139,6 @@ curl -fsSL https://install.determinate.systems/nix | sh -s -- install
 sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
 echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
 sudo systemctl restart nix-daemon.service
-```
-
-**Performance**
-```bash
-sudo apt-get update && sudo apt-get install -y \
-    build-essential \
-    cmake \
-    g++ \
-    git \
-    python3 \
-    python3-pip \
-    python3-venv \
-    scons \
-    zlib1g-dev \
-    libprotobuf-dev \
-    protobuf-compiler \
-    libgoogle-perftools-dev \
-    libboost-all-dev \
-    libhdf5-serial-dev \
-    libpng-dev \
-    libjemalloc-dev \
-    libhiredis-dev \ 
-    pkg-config \
-    wget \
-    m4 \
-    libtbb-dev \
-    gettext \
-    libgettextpo-dev \
-    libglw1-mesa-dev \
-    libxext-dev \
-    libx11-dev \
-    libxmu-dev \
-    libglut-dev \
-    libxi-dev \
-```
-
-### Python Dependencies (for plotting)
-
-```bash
-pip3 install pandas numpy matplotlib seaborn
 ```
 
 ---
@@ -359,7 +318,51 @@ This generates two CSV files and three figures in the `output/liveness/` directo
 
 **RAM usage**: 100GB recommended.
 
-## Build gem5
+---
+
+## Generated protocols performance evaluation
+
+### Prepare the Environment
+
+**gem5 dependencies:**
+```bash
+sudo apt-get update && sudo apt-get install -y \
+    build-essential \
+    cmake \
+    g++ \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    scons \
+    zlib1g-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    libgoogle-perftools-dev \
+    libboost-all-dev \
+    libhdf5-serial-dev \
+    libpng-dev \
+    libjemalloc-dev \
+    pkg-config \
+    wget \
+    m4 \
+    libtbb-dev \
+    gettext \
+    libgettextpo-dev \
+    libglw1-mesa-dev \
+    libxext-dev \
+    libx11-dev \
+    libxmu-dev \
+    libglut-dev \
+    libxi-dev \
+```
+
+**Python Dependencies (for plotting):**
+```bash
+pip3 install pandas numpy matplotlib seaborn
+```
+
+### Build gem5
 
 Build the gem5 simulator with all cache coherence protocols:
 
@@ -374,9 +377,8 @@ This builds:
 
 **Expected build time**: ~30-60 minutes (depending on CPU cores).
 
----
 
-## Build Benchmarks
+### Build Benchmarks
 
 Build all benchmark suites:
 
@@ -418,12 +420,11 @@ The validation script runs each workload for the three protocols and records a s
 data/functional/results.txt
 ```
 
-
 ---
 
 ## Run Experiments
 
-### Generate Configurations
+### Generate Workload Configurations
 
 First, generate the experiment configurations:
 
