@@ -60,6 +60,39 @@ if missing_columns:
 # Create a new DataFrame with only the necessary columns
 df_reduced = df[["apps", "protocol"] + columns].copy()
 
+
+print("\nNormalizing LLC values...")
+
+reference_values = {}
+for app in df_reduced["apps"].unique():
+    app_data = df_reduced[df_reduced["apps"] == app]
+    moesi_data = app_data[app_data["protocol"] == "MOESI_gem5"]
+    
+    if len(moesi_data) > 0:
+        # Sum of LLC components for MOESI_gem5
+        llc_total = sum(moesi_data[col].iloc[0] for col in columns)
+        reference_values[app] = llc_total
+        
+        # Normalize MOESI_gem5 to 1.0 total
+        if llc_total > 0:
+            for col in columns:
+                normalized_value = moesi_data[col].iloc[0] / llc_total
+                df_reduced.loc[moesi_data.index, col] = normalized_value
+
+for app in df_reduced["apps"].unique():
+    if app in reference_values and reference_values[app] > 0:
+        for protocol in ["MESI_MESI_MESI", "MESI_CXL_MESI"]:
+            protocol_data = df_reduced[(df_reduced["apps"] == app) & (df_reduced["protocol"] == protocol)]
+            
+            if len(protocol_data) > 0:
+                idx = protocol_data.index[0]
+                for col in columns:
+                    original_value = protocol_data[col].iloc[0]
+                    normalized_value = original_value / reference_values[app]
+                    df_reduced.at[idx, col] = normalized_value
+
+print("Normalization complete. MOESI_gem5 LLC sum = 1.0 for each app.")
+
 def plot_breakdown(title, df, order, text_points=[]):
     # Create the plot
     fig = plt.figure(figsize=figsize)
