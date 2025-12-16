@@ -1,5 +1,7 @@
 # vCXLGen: Automated Synthesis and Verification of CXL Bridges for Heterogeneous Architectures
 
+Artifacts for "vCXLGen: Automated Synthesis and Verification of CXL Bridges for Heterogeneous Architectures", ASPLOS '26
+
 This repository contains the artifact for verifying CXL-based cache coherence protocols using model checkers.
 
 ## Evaluated Setups
