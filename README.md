@@ -4,9 +4,15 @@ Artifacts for "vCXLGen: Automated Synthesis and Verification of CXL Bridges for 
 
 This repository contains the artifact for verifying and evaluating CXL-based cache coherence protocols using model checkers and the gem5 simulator.
 
-## Evaluated Protocol Setups
+This artifact can be used for:
 
-**Liveness Evaluation**:
+- Generating CXL bridges between several cache coherence protocols and CXL.mem
+- Verifying liveness and safety (through litmus tests) of the bridged protocols using model checkers
+- Evaluating performance of bridged protocols with gem5
+
+## Evaluated Protocols
+
+**Liveness models**:
 
 | LP_1   | GP     | LP_2   | Caches per LP Cluster | Model Name               |
 |--------|--------|--------|-----------------------|--------------------------|
@@ -14,7 +20,7 @@ This repository contains the artifact for verifying and evaluating CXL-based cac
 | `MESI` | `CXL`  | `RCC`  | 2                     | `MESIxCXLxRCC/2Cl_2CC`   |
 | `MESI` | `CXL`  | `RCC`  | 3                     | `MESIxCXLxRCC/2Cl_3CC`   |
 
-**Litmus Test Evaluation**:
+**Litmus Test models**:
 
 | LP_1   | GP     | LP_2   | Caches per LP Cluster | Model Name               |
 |--------|--------|--------|-----------------------|--------------------------|
