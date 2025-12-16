@@ -41,6 +41,8 @@ This artifact can be used for:
 
 ## Table of Contents
 
+- [Hardware Requirements](#hardware-requirements)
+- [Quick Start](#quick-start)
 - [Prerequisites](#prerequisites)
 - [Repository Structure](#repository-structure)
 - [Build CMurphi and Rumur](#build-cmurphi-and-rumur)
@@ -54,21 +56,13 @@ This artifact can be used for:
 
 ---
 
-## Prerequisites
+## Hardware Requirements
 
-* **OS**: Ubuntu 22.04 LTS
-
-**Verification**
-* **Packet Manager**: Nix with flakes support
-
-**Performance**
-* **Compiler**: GCC 11.4.0
-* **Python**: 3.10+
-* **SCons**: 4.0+
-
-**Hardware Requirements**:
-* ~2TB of RAM for the litmus test evaluation
-* ~100GB of RAM for the liveness evaluation
+* Any general purpose CPU
+* ~20GB free disk space (~5GB for litmus test models, ~10GB for gem5 builds)
+* ~100GB available RAM for the liveness evaluation
+* ~2TB available RAM for the litmus test evaluation
+* ~2GB available RAM per gem5 simulation
 
 ---
 
@@ -118,6 +112,16 @@ cd ..
 # 5. Generate plots (extracts stats + runs Python scripts)
 ./script/plot.sh
 ```
+
+---
+
+## Prerequisites
+
+* **OS**: Ubuntu 22.04 LTS
+* **Packet Manager**: Nix with flakes support
+* **Compiler**: GCC 11.4.0
+* **Python**: 3.10+
+* **SCons**: 4.0+
 
 ---
 
