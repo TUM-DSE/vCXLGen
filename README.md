@@ -68,6 +68,36 @@ This artifact can be used for:
 
 ## Quick Start
 
+For simplicity, we provide Docker images:
+
+- **Option 1: [Prebuilt](https://hub.docker.com/r/gingerbreadz/vcxlgen-artifact-prebuilt) image** (~20 GB)
+
+```bash
+$ just docker-prebuilt
+```
+
+Ready to run experiments -- includes nix and pre-compiled gem5 models for vCXLGen and pre-compiled workloads
+
+Then follow from: [Functional Validation](#functional-validation)
+
+- **Option 2: [Base](https://hub.docker.com/r/gingerbreadz/vcxlgen-artifact-base) image** (~1 GB)
+
+```bash
+$ just docker-base
+```
+
+Ready to use the generator, run the verification and compile gem5 models and the workloads -- includes system dependencies
+
+Then follow from: [Build CMuprhi and Rumur](#build-cmurphi-and-rumur)
+
+- **Option 3: Manual set-up** (~1h30-3h, 20 GB free space required)
+
+Follow the manual steps to set up the environment
+
+---
+
+## Cheat sheet
+
 **Verification**
 ```bash
 # 1. Build tools and initialize setup
