@@ -78,7 +78,9 @@ $ just docker-prebuilt
 
 Ready to run experiments -- includes nix and pre-compiled gem5 models for vCXLGen and pre-compiled workloads
 
-Then follow from: [Functional Validation](#functional-validation)
+Then follow from:
+[Run Litmus Test Experiments](#run-litmus-test-experiments) for verification, or
+[Functional Validation](#functional-validation) for performance
 
 - **Option 2: [Base](https://hub.docker.com/r/gingerbreadz/vcxlgen-artifact-base) image** (~1 GB)
 
@@ -92,7 +94,7 @@ Then follow from: [Build CMuprhi and Rumur](#build-cmurphi-and-rumur)
 
 - **Option 3: Manual set-up** (~1h30-3h, 20 GB free space required)
 
-Follow the manual steps to set up the environment
+Follow the manual steps to set up the environment from: [Prerequisites](#prerequisites)
 
 ---
 
@@ -238,12 +240,12 @@ vCXLGen-Artifact/
 From the `tools/` directory, run:
 
 ```bash
-nix develop -c "./build_tools.sh"
+nix develop -c "./init.sh"
 ```
 
 This builds:
 - CMurphi: `tools/murphi_src/src/mu`
-- Rumur: `/scratch/julian/cxl/tools/rumur_src/build/rumur/rumur`
+- Rumur: `tools/rumur_src/build/rumur/rumur`
 
 **Expected build time**: a few minutes.
 
@@ -428,7 +430,7 @@ To build only YCSB:
 - **Phoenix**: 7 applications (histogram, kmeans, linear_regression, etc.)
 - **YCSB-C**: 5 workloads (A, B, C, D, F)
 
-### Functional Validation (YCSB)
+### Functional Validation
 
 We provide a small functional validation harness that runs selected YCSB-C workloads as a correctness check across the evaluated coherence protocols.
 
