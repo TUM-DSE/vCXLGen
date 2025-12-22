@@ -18,6 +18,7 @@
           packages = with pkgs;[
             gcc
             bison
+            byacc
             cmake
             flex
             gmp
