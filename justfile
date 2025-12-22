@@ -15,7 +15,6 @@ docker-build-multi:
 # From vCXLGen prebuilt image -- skip gem5 and benchmark compilation
 docker-prebuilt:
     docker run                                     \
-        -u {{UID}}:{{GID}}                           \
         --volume ./script:/script       \
         --volume ./setup:/setup       \
         --volume ./slicc:/slicc       \
@@ -29,7 +28,6 @@ docker-prebuilt:
 # From vCXLGen base image -- only includes extra dependencies, compile gem5 & benchmarks from instructions
 docker-base:
     docker run                                     \
-        -u {{UID}}:{{GID}}                           \
         --mount type=bind,source=./gem5.tar.gz,target=/gem5.tar.gz \
         --volume ./gem5:/gem5       \
         --volume ./benchmarks:/benchmarks       \
@@ -45,7 +43,7 @@ docker-base:
 
 # From gem5 official base image -- install extra vCXLGen dependencies and build gem5 & benchmarks from instructions
 gem5-docker:
-    sudo docker run                                     \
+    docker run                                     \
         --mount type=bind,source=./gem5.tar.gz,target=/gem5.tar.gz \
         --volume ./gem5:/gem5       \
         --volume ./benchmarks:/benchmarks       \
